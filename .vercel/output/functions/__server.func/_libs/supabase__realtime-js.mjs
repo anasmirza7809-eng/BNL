@@ -94,7 +94,7 @@ var WebSocketFactory = class {
 };
 //#endregion
 //#region node_modules/@supabase/realtime-js/dist/module/lib/constants.js
-var DEFAULT_VERSION = `realtime-js/2.112.0`;
+var DEFAULT_VERSION = `realtime-js/2.110.7`;
 var VSN_1_0_0 = "1.0.0";
 var VSN_2_0_0 = "2.0.0";
 var DEFAULT_VSN = VSN_2_0_0;
@@ -521,12 +521,10 @@ var PresenceAdapter = class PresenceAdapter {
 };
 function transformState(presences) {
 	return presences.metas.map((presence) => {
-		const descriptors = Object.getOwnPropertyDescriptors(presence);
-		const transformedPresence = Object.defineProperties({}, descriptors);
-		transformedPresence["presence_ref"] = transformedPresence["phx_ref"];
-		delete transformedPresence["phx_ref"];
-		delete transformedPresence["phx_ref_prev"];
-		return transformedPresence;
+		presence["presence_ref"] = presence["phx_ref"];
+		delete presence["phx_ref"];
+		delete presence["phx_ref_prev"];
+		return presence;
 	});
 }
 function cloneState(state) {

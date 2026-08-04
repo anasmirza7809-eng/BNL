@@ -1,4 +1,4 @@
-import { i as __toESM, r as __require, t as __commonJSMin } from "../../_runtime.mjs";
+import { n as __require, r as __toESM, t as __commonJSMin } from "../../_runtime.mjs";
 import { c as require_react, s as require_jsx_runtime } from "../react+tanstack__react-query.mjs";
 import { r as parseHref } from "../tanstack__history.mjs";
 import { PassThrough, Readable } from "node:stream";
@@ -11,6 +11,48 @@ var import_react = /* @__PURE__ */ __toESM(require_react(), 1);
 */
 var reactUse = import_react.use;
 typeof window !== "undefined" ? import_react.useLayoutEffect : import_react.useEffect;
+/**
+* React hook to wrap `IntersectionObserver`.
+*
+* This hook will create an `IntersectionObserver` and observe the ref passed to it.
+*
+* When the intersection changes, the callback will be called with the `IntersectionObserverEntry`.
+*
+* @param ref - The ref to observe
+* @param intersectionObserverOptions - The options to pass to the IntersectionObserver
+* @param options - The options to pass to the hook
+* @param callback - The callback to call when the intersection changes
+* @returns The IntersectionObserver instance
+* @example
+* ```tsx
+* const MyComponent = () => {
+* const ref = React.useRef<HTMLDivElement>(null)
+* useIntersectionObserver(
+*  ref,
+*  (entry) => { doSomething(entry) },
+*  { rootMargin: '10px' },
+*  { disabled: false }
+* )
+* return <div ref={ref} />
+* ```
+*/
+function useIntersectionObserver(ref, callback, intersectionObserverOptions = {}, options = {}) {
+	import_react.useEffect(() => {
+		if (!ref.current || options.disabled || typeof IntersectionObserver !== "function") return;
+		const observer = new IntersectionObserver(([entry]) => {
+			callback(entry);
+		}, intersectionObserverOptions);
+		observer.observe(ref.current);
+		return () => {
+			observer.disconnect();
+		};
+	}, [
+		callback,
+		intersectionObserverOptions,
+		options.disabled,
+		ref
+	]);
+}
 /**
 * React hook to take a `React.ForwardedRef` and returns a `ref` that can be used on a DOM element.
 *
@@ -385,7 +427,7 @@ function getOpenAndCloseBraces(part) {
 * `output` is stored outside to avoid allocations during repeated calls. It doesn't need to be typed
 * or initialized, it will be done automatically.
 */
-function parseSegment(path, start, output = /* @__PURE__ */ new Uint16Array(6)) {
+function parseSegment(path, start, output = new Uint16Array(6)) {
 	const next = path.indexOf("/", start);
 	const end = next === -1 ? path.length : next;
 	const part = path.substring(start, end);
@@ -680,7 +722,7 @@ function createDynamicNode(kind, fullPath, caseSensitive, prefix, suffix) {
 }
 function processRouteMasks(routeList, processedTree) {
 	const segmentTree = createStaticNode("/");
-	const data = /* @__PURE__ */ new Uint16Array(6);
+	const data = new Uint16Array(6);
 	for (const route of routeList) parseSegments(false, data, route, 1, segmentTree, 0);
 	sortTreeNodes(segmentTree);
 	processedTree.masksTree = segmentTree;
@@ -707,7 +749,7 @@ function findSingleMatch(from, caseSensitive, fuzzy, path, processedTree) {
 	let tree = processedTree.singleCache.get(key);
 	if (!tree) {
 		tree = createStaticNode("/");
-		parseSegments(caseSensitive, /* @__PURE__ */ new Uint16Array(6), { from }, 1, tree, 0);
+		parseSegments(caseSensitive, new Uint16Array(6), { from }, 1, tree, 0);
 		processedTree.singleCache.set(key, tree);
 	}
 	return findMatch(path, tree, fuzzy);
@@ -738,7 +780,7 @@ function trimPathRight$1(path) {
 */
 function processRouteTree(routeTree, caseSensitive = false, initRoute) {
 	const segmentTree = createStaticNode(routeTree.fullPath);
-	const data = /* @__PURE__ */ new Uint16Array(6);
+	const data = new Uint16Array(6);
 	const routesById = {};
 	const routesByPath = {};
 	let index = 0;
@@ -3023,7 +3065,7 @@ var RouterCore = class {
 			const filter = (d) => {
 				const route = this.looseRoutesById[d.routeId];
 				if (!route.options.loader) return true;
-				const gcTime = (d.preload ? route.options.preloadGcTime ?? this.options.defaultPreloadGcTime : route.options.gcTime ?? this.options.defaultGcTime) ?? 3e5;
+				const gcTime = (d.preload ? route.options.preloadGcTime ?? this.options.defaultPreloadGcTime : route.options.gcTime ?? this.options.defaultGcTime) ?? 300 * 1e3;
 				if (d.status === "error") return true;
 				return now - d.updatedAt >= gcTime;
 			};
@@ -3037,8 +3079,8 @@ var RouterCore = class {
 				preload: true,
 				dest: opts
 			});
-			const activeMatchIds = /* @__PURE__ */ new Set([...this.stores.matchesId.get(), ...this.stores.pendingIds.get()]);
-			const loadedMatchIds = /* @__PURE__ */ new Set([...activeMatchIds, ...this.stores.cachedIds.get()]);
+			const activeMatchIds = new Set([...this.stores.matchesId.get(), ...this.stores.pendingIds.get()]);
+			const loadedMatchIds = new Set([...activeMatchIds, ...this.stores.cachedIds.get()]);
 			const matchesToCache = matches.filter((match) => !loadedMatchIds.has(match.id));
 			if (matchesToCache.length) {
 				const cachedMatches = this.stores.cachedMatches.get();
@@ -3461,6 +3503,9 @@ function extractStrictParams(route, accumulatedParams) {
 		Object.assign(accumulatedParams, result);
 	}
 }
+//#endregion
+//#region node_modules/@tanstack/router-core/dist/esm/link.js
+var preloadWarning = "Error preloading route! ☝️";
 //#endregion
 //#region node_modules/@tanstack/router-core/dist/esm/manifest.js
 function getAssetCrossOrigin(assetCrossOrigin, kind) {
@@ -3981,11 +4026,7 @@ var require_use_sync_external_store_shim_production = /* @__PURE__ */ __commonJS
 	function is(x, y) {
 		return x === y && (0 !== x || 1 / x === 1 / y) || x !== x && y !== y;
 	}
-	var objectIs = "function" === typeof Object.is ? Object.is : is;
-	var useState = React.useState;
-	var useEffect = React.useEffect;
-	var useLayoutEffect = React.useLayoutEffect;
-	var useDebugValue = React.useDebugValue;
+	var objectIs = "function" === typeof Object.is ? Object.is : is, useState = React.useState, useEffect = React.useEffect, useLayoutEffect = React.useLayoutEffect, useDebugValue = React.useDebugValue;
 	function useSyncExternalStore$2(subscribe, getSnapshot) {
 		var value = getSnapshot(), _useState = useState({ inst: {
 			value,
@@ -4042,17 +4083,11 @@ var require_shim = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 * LICENSE file in the root directory of this source tree.
 */
 var require_with_selector_production = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var React = require_react();
-	var shim = require_shim();
+	var React = require_react(), shim = require_shim();
 	function is(x, y) {
 		return x === y && (0 !== x || 1 / x === 1 / y) || x !== x && y !== y;
 	}
-	var objectIs = "function" === typeof Object.is ? Object.is : is;
-	var useSyncExternalStore = shim.useSyncExternalStore;
-	var useRef = React.useRef;
-	var useEffect = React.useEffect;
-	var useMemo = React.useMemo;
-	var useDebugValue = React.useDebugValue;
+	var objectIs = "function" === typeof Object.is ? Object.is : is, useSyncExternalStore = shim.useSyncExternalStore, useRef = React.useRef, useEffect = React.useEffect, useMemo = React.useMemo, useDebugValue = React.useDebugValue;
 	exports.useSyncExternalStoreWithSelector = function(subscribe, getSnapshot, getServerSnapshot, selector, isEqual) {
 		var instRef = useRef(null);
 		if (null === instRef.current) {
@@ -4102,9 +4137,39 @@ var require_with_selector_production = /* @__PURE__ */ __commonJSMin(((exports) 
 		return value;
 	};
 }));
-(/* @__PURE__ */ __commonJSMin(((exports, module) => {
+//#endregion
+//#region node_modules/@tanstack/react-store/dist/esm/useStore.js
+var import_with_selector = (/* @__PURE__ */ __commonJSMin(((exports, module) => {
 	module.exports = require_with_selector_production();
 })))();
+function defaultCompare(a, b) {
+	return a === b;
+}
+function useStore(atom, selector, compare = defaultCompare) {
+	const subscribe = (0, import_react.useCallback)((handleStoreChange) => {
+		if (!atom) return () => {};
+		const { unsubscribe } = atom.subscribe(handleStoreChange);
+		return unsubscribe;
+	}, [atom]);
+	const boundGetSnapshot = (0, import_react.useCallback)(() => atom?.get(), [atom]);
+	return (0, import_with_selector.useSyncExternalStoreWithSelector)(subscribe, boundGetSnapshot, boundGetSnapshot, selector, compare);
+}
+//#endregion
+//#region node_modules/@tanstack/react-router/dist/esm/useMatch.js
+var dummyStore = {
+	get() {},
+	subscribe() {
+		return { unsubscribe() {} };
+	}
+};
+function useStructuralSharing(opts, router) {
+	const previousResult = import_react.useRef();
+	return (slice) => {
+		const selected = opts?.select ? opts.select(slice) : slice;
+		if (opts?.structuralSharing ?? router.options.defaultStructuralSharing) return previousResult.current = replaceEqualDeep(previousResult.current, selected);
+		return selected;
+	};
+}
 /**
 * Read and select the nearest or targeted route match.
 * @link https://tanstack.com/router/latest/docs/framework/react/api/router/useMatchHook
@@ -4121,6 +4186,10 @@ function useMatch(opts) {
 		}
 		return opts.select ? opts.select(match) : match;
 	}
+	const selector = useStructuralSharing(opts, router);
+	const matchSelection = useStore(matchStore ?? dummyStore, (match) => match ? selector(match) : dummyStore);
+	if (matchSelection !== dummyStore) return matchSelection;
+	if (opts.shouldThrow ?? true) invariant();
 }
 //#endregion
 //#region node_modules/@tanstack/react-router/dist/esm/useLoaderData.js
@@ -4289,8 +4358,7 @@ var require_react_dom_production = /* @__PURE__ */ __commonJSMin(((exports) => {
 		},
 		p: 0,
 		findDOMNode: null
-	};
-	var REACT_PORTAL_TYPE = Symbol.for("react.portal");
+	}, REACT_PORTAL_TYPE = Symbol.for("react.portal");
 	function createPortal$1(children, containerInfo, implementation) {
 		var key = 3 < arguments.length && void 0 !== arguments[3] ? arguments[3] : null;
 		return {
@@ -4391,7 +4459,7 @@ var require_react_dom_production = /* @__PURE__ */ __commonJSMin(((exports) => {
 	exports.useFormStatus = function() {
 		return ReactSharedInternals.H.useHostTransitionStatus();
 	};
-	exports.version = "19.2.8";
+	exports.version = "19.2.5";
 }));
 //#endregion
 //#region node_modules/react-dom/index.js
@@ -4407,7 +4475,9 @@ var require_react_dom = /* @__PURE__ */ __commonJSMin(((exports, module) => {
 	checkDCE();
 	module.exports = require_react_dom_production();
 }));
-require_react_dom();
+//#endregion
+//#region node_modules/@tanstack/react-router/dist/esm/link.js
+var import_react_dom = /* @__PURE__ */ __toESM(require_react_dom(), 1);
 /**
 * Build anchor-like props for declarative navigation and preloading.
 *
@@ -4543,6 +4613,215 @@ function useLinkProps(options, forwardedRef) {
 			...isActive && STATIC_ACTIVE_PROPS
 		};
 	}
+	const isHydrated = useHydrated();
+	const _options = import_react.useMemo(() => options, [
+		router,
+		options.from,
+		options._fromLocation,
+		options.hash,
+		options.to,
+		options.search,
+		options.params,
+		options.state,
+		options.mask,
+		options.unsafeRelative
+	]);
+	const currentLocation = useStore(router.stores.location, (l) => l, (prev, next) => prev.href === next.href);
+	const next = import_react.useMemo(() => {
+		const opts = {
+			_fromLocation: currentLocation,
+			..._options
+		};
+		return router.buildLocation(opts);
+	}, [
+		router,
+		currentLocation,
+		_options
+	]);
+	const hrefOptionPublicHref = next.maskedLocation ? next.maskedLocation.publicHref : next.publicHref;
+	const hrefOptionExternal = next.maskedLocation ? next.maskedLocation.external : next.external;
+	const hrefOption = import_react.useMemo(() => getHrefOption(hrefOptionPublicHref, hrefOptionExternal, router.history, disabled), [
+		disabled,
+		hrefOptionExternal,
+		hrefOptionPublicHref,
+		router.history
+	]);
+	const externalLink = import_react.useMemo(() => {
+		if (hrefOption?.external) {
+			if (isDangerousProtocol(hrefOption.href, router.protocolAllowlist)) return;
+			return hrefOption.href;
+		}
+		if (isSafeInternal(to)) return void 0;
+		if (typeof to !== "string" || to.indexOf(":") === -1) return void 0;
+		try {
+			new URL(to);
+			if (isDangerousProtocol(to, router.protocolAllowlist)) return;
+			return to;
+		} catch {}
+	}, [
+		to,
+		hrefOption,
+		router.protocolAllowlist
+	]);
+	const isActive = import_react.useMemo(() => {
+		if (externalLink) return false;
+		if (activeOptions?.exact) {
+			if (!exactPathTest(currentLocation.pathname, next.pathname, router.basepath)) return false;
+		} else {
+			const currentPathSplit = removeTrailingSlash(currentLocation.pathname, router.basepath);
+			const nextPathSplit = removeTrailingSlash(next.pathname, router.basepath);
+			if (!(currentPathSplit.startsWith(nextPathSplit) && (currentPathSplit.length === nextPathSplit.length || currentPathSplit[nextPathSplit.length] === "/"))) return false;
+		}
+		if (activeOptions?.includeSearch ?? true) {
+			if (!deepEqual(currentLocation.search, next.search, {
+				partial: !activeOptions?.exact,
+				ignoreUndefined: !activeOptions?.explicitUndefined
+			})) return false;
+		}
+		if (activeOptions?.includeHash) return isHydrated && currentLocation.hash === next.hash;
+		return true;
+	}, [
+		activeOptions?.exact,
+		activeOptions?.explicitUndefined,
+		activeOptions?.includeHash,
+		activeOptions?.includeSearch,
+		currentLocation,
+		externalLink,
+		isHydrated,
+		next.hash,
+		next.pathname,
+		next.search,
+		router.basepath
+	]);
+	const resolvedActiveProps = isActive ? functionalUpdate(activeProps, {}) ?? STATIC_ACTIVE_OBJECT : STATIC_EMPTY_OBJECT;
+	const resolvedInactiveProps = isActive ? STATIC_EMPTY_OBJECT : functionalUpdate(inactiveProps, {}) ?? STATIC_EMPTY_OBJECT;
+	const resolvedClassName = [
+		className,
+		resolvedActiveProps.className,
+		resolvedInactiveProps.className
+	].filter(Boolean).join(" ");
+	const resolvedStyle = (style || resolvedActiveProps.style || resolvedInactiveProps.style) && {
+		...style,
+		...resolvedActiveProps.style,
+		...resolvedInactiveProps.style
+	};
+	const [isTransitioning, setIsTransitioning] = import_react.useState(false);
+	const hasRenderFetched = import_react.useRef(false);
+	const preload = options.reloadDocument || externalLink ? false : userPreload ?? router.options.defaultPreload;
+	const preloadDelay = userPreloadDelay ?? router.options.defaultPreloadDelay ?? 0;
+	const doPreload = import_react.useCallback(() => {
+		router.preloadRoute({
+			..._options,
+			_builtLocation: next
+		}).catch((err) => {
+			console.warn(err);
+			console.warn(preloadWarning);
+		});
+	}, [
+		router,
+		_options,
+		next
+	]);
+	useIntersectionObserver(innerRef, import_react.useCallback((entry) => {
+		if (entry?.isIntersecting) doPreload();
+	}, [doPreload]), intersectionObserverOptions, { disabled: !!disabled || !(preload === "viewport") });
+	import_react.useEffect(() => {
+		if (hasRenderFetched.current) return;
+		if (!disabled && preload === "render") {
+			doPreload();
+			hasRenderFetched.current = true;
+		}
+	}, [
+		disabled,
+		doPreload,
+		preload
+	]);
+	const handleClick = (e) => {
+		const elementTarget = e.currentTarget.getAttribute("target");
+		const effectiveTarget = target !== void 0 ? target : elementTarget;
+		if (!disabled && !isCtrlEvent(e) && !e.defaultPrevented && (!effectiveTarget || effectiveTarget === "_self") && e.button === 0) {
+			e.preventDefault();
+			(0, import_react_dom.flushSync)(() => {
+				setIsTransitioning(true);
+			});
+			const unsub = router.subscribe("onResolved", () => {
+				unsub();
+				setIsTransitioning(false);
+			});
+			router.navigate({
+				..._options,
+				replace,
+				resetScroll,
+				hashScrollIntoView,
+				startTransition,
+				viewTransition,
+				ignoreBlocker
+			});
+		}
+	};
+	if (externalLink) return {
+		...propsSafeToSpread,
+		ref: innerRef,
+		href: externalLink,
+		...children && { children },
+		...target && { target },
+		...disabled && { disabled },
+		...style && { style },
+		...className && { className },
+		...onClick && { onClick },
+		...onBlur && { onBlur },
+		...onFocus && { onFocus },
+		...onMouseEnter && { onMouseEnter },
+		...onMouseLeave && { onMouseLeave },
+		...onTouchStart && { onTouchStart }
+	};
+	const enqueueIntentPreload = (e) => {
+		if (disabled || preload !== "intent") return;
+		if (!preloadDelay) {
+			doPreload();
+			return;
+		}
+		const eventTarget = e.currentTarget;
+		if (timeoutMap.has(eventTarget)) return;
+		const id = setTimeout(() => {
+			timeoutMap.delete(eventTarget);
+			doPreload();
+		}, preloadDelay);
+		timeoutMap.set(eventTarget, id);
+	};
+	const handleTouchStart = (_) => {
+		if (disabled || preload !== "intent") return;
+		doPreload();
+	};
+	const handleLeave = (e) => {
+		if (disabled || !preload || !preloadDelay) return;
+		const eventTarget = e.currentTarget;
+		const id = timeoutMap.get(eventTarget);
+		if (id) {
+			clearTimeout(id);
+			timeoutMap.delete(eventTarget);
+		}
+	};
+	return {
+		...propsSafeToSpread,
+		...resolvedActiveProps,
+		...resolvedInactiveProps,
+		href: hrefOption?.href,
+		ref: innerRef,
+		onClick: composeHandlers([onClick, handleClick]),
+		onBlur: composeHandlers([onBlur, handleLeave]),
+		onFocus: composeHandlers([onFocus, enqueueIntentPreload]),
+		onMouseEnter: composeHandlers([onMouseEnter, enqueueIntentPreload]),
+		onMouseLeave: composeHandlers([onMouseLeave, handleLeave]),
+		onTouchStart: composeHandlers([onTouchStart, handleTouchStart]),
+		disabled: !!disabled,
+		target,
+		...resolvedStyle && { style: resolvedStyle },
+		...resolvedClassName && { className: resolvedClassName },
+		...disabled && STATIC_DISABLED_PROPS,
+		...isActive && STATIC_ACTIVE_PROPS,
+		...isHydrated && isTransitioning && STATIC_TRANSITIONING_PROPS
+	};
 }
 var STATIC_EMPTY_OBJECT = {};
 var STATIC_ACTIVE_OBJECT = { className: "active" };
@@ -4553,6 +4832,16 @@ var STATIC_DISABLED_PROPS = {
 var STATIC_ACTIVE_PROPS = {
 	"data-status": "active",
 	"aria-current": "page"
+};
+var STATIC_TRANSITIONING_PROPS = { "data-transitioning": "transitioning" };
+var timeoutMap = /* @__PURE__ */ new WeakMap();
+var intersectionObserverOptions = { rootMargin: "100px" };
+var composeHandlers = (handlers) => (e) => {
+	for (const handler of handlers) {
+		if (!handler) continue;
+		if (e.defaultPrevented) return;
+		handler(e);
+	}
 };
 function getHrefOption(publicHref, external, history, disabled) {
 	if (disabled) return void 0;
@@ -4597,6 +4886,9 @@ var Link = import_react.forwardRef((props, ref) => {
 	}
 	return import_react.createElement(_asChild, linkProps, children);
 });
+function isCtrlEvent(e) {
+	return !!(e.metaKey || e.altKey || e.ctrlKey || e.shiftKey);
+}
 //#endregion
 //#region node_modules/@tanstack/react-router/dist/esm/route.js
 var Route = class extends BaseRoute {
@@ -4851,6 +5143,19 @@ function CatchNotFound(props) {
 			children: props.children
 		});
 	}
+	const resetKey = `not-found-${useStore(router.stores.location, (location) => location.pathname)}-${useStore(router.stores.status, (status) => status)}`;
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CatchBoundary, {
+		getResetKey: () => resetKey,
+		onCatch: (error, errorInfo) => {
+			if (isNotFound(error)) props.onCatch?.(error, errorInfo);
+			else throw error;
+		},
+		errorComponent: ({ error }) => {
+			if (isNotFound(error)) return props.fallback?.(error);
+			else throw error;
+		},
+		children: props.children
+	});
 }
 function DefaultGlobalNotFound() {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "Not Found" });
@@ -4915,6 +5220,9 @@ function ScrollRestoration() {
 	if (!script) return null;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScriptOnce, { children: script });
 }
+//#endregion
+//#region node_modules/@tanstack/react-router/dist/esm/Match.js
+var matchViewFieldsEqual = (a, b) => a.routeId === b.routeId && a._displayPending === b._displayPending;
 var Match = import_react.memo(function MatchImpl({ matchId }) {
 	const router = useRouter();
 	{
@@ -4934,6 +5242,30 @@ var Match = import_react.memo(function MatchImpl({ matchId }) {
 			}
 		});
 	}
+	const matchStore = router.stores.matchStores.get(matchId);
+	if (!matchStore) invariant();
+	const resetKey = useStore(router.stores.loadedAt, (loadedAt) => loadedAt);
+	const match = useStore(matchStore, (value) => value, matchViewFieldsEqual);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MatchView, {
+		router,
+		matchId,
+		resetKey,
+		matchState: import_react.useMemo(() => {
+			const routeId = match.routeId;
+			const parentRouteId = router.routesById[routeId].parentRoute?.id;
+			return {
+				routeId,
+				ssr: match.ssr,
+				_displayPending: match._displayPending,
+				parentRouteId
+			};
+		}, [
+			match._displayPending,
+			match.routeId,
+			match.ssr,
+			router.routesById
+		])
+	});
 });
 function MatchView({ router, matchId, resetKey, matchState }) {
 	const route = router.routesById[matchState.routeId];
@@ -5016,6 +5348,59 @@ var MatchInner = import_react.memo(function MatchInnerImpl({ matchId }) {
 		});
 		return out;
 	}
+	const matchStore = router.stores.matchStores.get(matchId);
+	if (!matchStore) invariant();
+	const match = useStore(matchStore, (value) => value);
+	const routeId = match.routeId;
+	const route = router.routesById[routeId];
+	const key = import_react.useMemo(() => {
+		const remountDeps = (router.routesById[routeId].options.remountDeps ?? router.options.defaultRemountDeps)?.({
+			routeId,
+			loaderDeps: match.loaderDeps,
+			params: match._strictParams,
+			search: match._strictSearch
+		});
+		return remountDeps ? JSON.stringify(remountDeps) : void 0;
+	}, [
+		routeId,
+		match.loaderDeps,
+		match._strictParams,
+		match._strictSearch,
+		router.options.defaultRemountDeps,
+		router.routesById
+	]);
+	const out = import_react.useMemo(() => {
+		const Comp = route.options.component ?? router.options.defaultComponent;
+		if (Comp) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Comp, {}, key);
+		return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Outlet, {});
+	}, [
+		key,
+		route.options.component,
+		router.options.defaultComponent
+	]);
+	if (match._displayPending) throw getMatchPromise(match, "displayPendingPromise");
+	if (match._forcePending) throw getMatchPromise(match, "minPendingPromise");
+	if (match.status === "pending") {
+		if (route.options.pendingMinMs ?? router.options.defaultPendingMinMs) {
+			const routerMatch = router.getMatch(match.id);
+			if (routerMatch && !routerMatch._nonReactive.minPendingPromise) {}
+		}
+		throw getMatchPromise(match, "loadPromise");
+	}
+	if (match.status === "notFound") {
+		if (!isNotFound(match.error)) invariant();
+		return renderRouteNotFound(router, route, match.error);
+	}
+	if (match.status === "redirected") {
+		if (!isRedirect(match.error)) invariant();
+		throw getMatchPromise(match, "loadPromise");
+	}
+	if (match.status === "error") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)((route.options.errorComponent ?? router.options.defaultErrorComponent) || ErrorComponent, {
+		error: match.error,
+		reset: void 0,
+		info: { componentStack: "" }
+	});
+	return out;
 });
 /**
 * Render the next child match in the route tree. Typically used inside
@@ -5171,6 +5556,7 @@ function useRouterState(opts) {
 		const state = router.stores.__store.get();
 		return opts?.select ? opts.select(state) : state;
 	}
+	return useStore(router.stores.__store, useStructuralSharing(opts, router));
 }
 //#endregion
 //#region node_modules/@tanstack/react-router/dist/esm/Asset.js
@@ -5458,6 +5844,8 @@ var Scripts = () => {
 		const assetScripts = getAssetScripts(activeMatches);
 		return renderScripts(router, getScripts(activeMatches), assetScripts);
 	}
+	const assetScripts = useStore(router.stores.matches, getAssetScripts, deepEqual);
+	return renderScripts(router, useStore(router.stores.matches, getScripts, deepEqual), assetScripts);
 };
 function renderScripts(router, scripts, assetScripts) {
 	const allScripts = [...scripts, ...assetScripts];
@@ -5482,26 +5870,7 @@ function renderScripts(router, scripts, assetScripts) {
 * LICENSE file in the root directory of this source tree.
 */
 var require_react_dom_server_legacy_node_production = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var React = require_react();
-	var ReactDOM = require_react_dom();
-	var REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element");
-	var REACT_PORTAL_TYPE = Symbol.for("react.portal");
-	var REACT_FRAGMENT_TYPE = Symbol.for("react.fragment");
-	var REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode");
-	var REACT_PROFILER_TYPE = Symbol.for("react.profiler");
-	var REACT_CONSUMER_TYPE = Symbol.for("react.consumer");
-	var REACT_CONTEXT_TYPE = Symbol.for("react.context");
-	var REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref");
-	var REACT_SUSPENSE_TYPE = Symbol.for("react.suspense");
-	var REACT_SUSPENSE_LIST_TYPE = Symbol.for("react.suspense_list");
-	var REACT_MEMO_TYPE = Symbol.for("react.memo");
-	var REACT_LAZY_TYPE = Symbol.for("react.lazy");
-	var REACT_SCOPE_TYPE = Symbol.for("react.scope");
-	var REACT_ACTIVITY_TYPE = Symbol.for("react.activity");
-	var REACT_LEGACY_HIDDEN_TYPE = Symbol.for("react.legacy_hidden");
-	var REACT_MEMO_CACHE_SENTINEL = Symbol.for("react.memo_cache_sentinel");
-	var REACT_VIEW_TRANSITION_TYPE = Symbol.for("react.view_transition");
-	var MAYBE_ITERATOR_SYMBOL = Symbol.iterator;
+	var React = require_react(), ReactDOM = require_react_dom(), REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = Symbol.for("react.profiler"), REACT_CONSUMER_TYPE = Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = Symbol.for("react.context"), REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = Symbol.for("react.suspense"), REACT_SUSPENSE_LIST_TYPE = Symbol.for("react.suspense_list"), REACT_MEMO_TYPE = Symbol.for("react.memo"), REACT_LAZY_TYPE = Symbol.for("react.lazy"), REACT_SCOPE_TYPE = Symbol.for("react.scope"), REACT_ACTIVITY_TYPE = Symbol.for("react.activity"), REACT_LEGACY_HIDDEN_TYPE = Symbol.for("react.legacy_hidden"), REACT_MEMO_CACHE_SENTINEL = Symbol.for("react.memo_cache_sentinel"), REACT_VIEW_TRANSITION_TYPE = Symbol.for("react.view_transition"), MAYBE_ITERATOR_SYMBOL = Symbol.iterator;
 	function getIteratorFn(maybeIterable) {
 		if (null === maybeIterable || "object" !== typeof maybeIterable) return null;
 		maybeIterable = MAYBE_ITERATOR_SYMBOL && maybeIterable[MAYBE_ITERATOR_SYMBOL] || maybeIterable["@@iterator"];
@@ -5536,11 +5905,7 @@ var require_react_dom_server_legacy_node_production = /* @__PURE__ */ __commonJS
 		h1 = 3266489909 * (h1 & 65535) + ((3266489909 * (h1 >>> 16) & 65535) << 16) & 4294967295;
 		return (h1 ^ h1 >>> 16) >>> 0;
 	}
-	var assign = Object.assign;
-	var hasOwnProperty = Object.prototype.hasOwnProperty;
-	var VALID_ATTRIBUTE_NAME_REGEX = RegExp("^[:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD][:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040]*$");
-	var illegalAttributeNameCache = {};
-	var validatedAttributeNameCache = {};
+	var assign = Object.assign, hasOwnProperty = Object.prototype.hasOwnProperty, VALID_ATTRIBUTE_NAME_REGEX = RegExp("^[:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD][:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040]*$"), illegalAttributeNameCache = {}, validatedAttributeNameCache = {};
 	function isAttributeNameSafe(attributeName) {
 		if (hasOwnProperty.call(validatedAttributeNameCache, attributeName)) return !0;
 		if (hasOwnProperty.call(illegalAttributeNameCache, attributeName)) return !1;
@@ -5548,8 +5913,7 @@ var require_react_dom_server_legacy_node_production = /* @__PURE__ */ __commonJS
 		illegalAttributeNameCache[attributeName] = !0;
 		return !1;
 	}
-	var unitlessNumbers = new Set("animationIterationCount aspectRatio borderImageOutset borderImageSlice borderImageWidth boxFlex boxFlexGroup boxOrdinalGroup columnCount columns flex flexGrow flexPositive flexShrink flexNegative flexOrder gridArea gridRow gridRowEnd gridRowSpan gridRowStart gridColumn gridColumnEnd gridColumnSpan gridColumnStart fontWeight lineClamp lineHeight opacity order orphans scale tabSize widows zIndex zoom fillOpacity floodOpacity stopOpacity strokeDasharray strokeDashoffset strokeMiterlimit strokeOpacity strokeWidth MozAnimationIterationCount MozBoxFlex MozBoxFlexGroup MozLineClamp msAnimationIterationCount msFlex msZoom msFlexGrow msFlexNegative msFlexOrder msFlexPositive msFlexShrink msGridColumn msGridColumnSpan msGridRow msGridRowSpan WebkitAnimationIterationCount WebkitBoxFlex WebKitBoxFlexGroup WebkitBoxOrdinalGroup WebkitColumnCount WebkitColumns WebkitFlex WebkitFlexGrow WebkitFlexPositive WebkitFlexShrink WebkitLineClamp".split(" "));
-	var aliases = /* @__PURE__ */ new Map([
+	var unitlessNumbers = new Set("animationIterationCount aspectRatio borderImageOutset borderImageSlice borderImageWidth boxFlex boxFlexGroup boxOrdinalGroup columnCount columns flex flexGrow flexPositive flexShrink flexNegative flexOrder gridArea gridRow gridRowEnd gridRowSpan gridRowStart gridColumn gridColumnEnd gridColumnSpan gridColumnStart fontWeight lineClamp lineHeight opacity order orphans scale tabSize widows zIndex zoom fillOpacity floodOpacity stopOpacity strokeDasharray strokeDashoffset strokeMiterlimit strokeOpacity strokeWidth MozAnimationIterationCount MozBoxFlex MozBoxFlexGroup MozLineClamp msAnimationIterationCount msFlex msZoom msFlexGrow msFlexNegative msFlexOrder msFlexPositive msFlexShrink msGridColumn msGridColumnSpan msGridRow msGridRowSpan WebkitAnimationIterationCount WebkitBoxFlex WebKitBoxFlexGroup WebkitBoxOrdinalGroup WebkitColumnCount WebkitColumns WebkitFlex WebkitFlexGrow WebkitFlexPositive WebkitFlexShrink WebkitLineClamp".split(" ")), aliases = new Map([
 		["acceptCharset", "accept-charset"],
 		["htmlFor", "for"],
 		["httpEquiv", "http-equiv"],
@@ -5628,8 +5992,7 @@ var require_react_dom_server_legacy_node_production = /* @__PURE__ */ __commonJS
 		["writingMode", "writing-mode"],
 		["xmlnsXlink", "xmlns:xlink"],
 		["xHeight", "x-height"]
-	]);
-	var matchHtmlRegExp = /["'&<>]/;
+	]), matchHtmlRegExp = /["'&<>]/;
 	function escapeTextForBrowser(text) {
 		if ("boolean" === typeof text || "number" === typeof text || "bigint" === typeof text) return "" + text;
 		text = "" + text;
@@ -5663,21 +6026,16 @@ var require_react_dom_server_legacy_node_production = /* @__PURE__ */ __commonJS
 		}
 		return text;
 	}
-	var uppercasePattern = /([A-Z])/g;
-	var msPattern = /^ms-/;
-	var isJavaScriptProtocol = /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*:/i;
+	var uppercasePattern = /([A-Z])/g, msPattern = /^ms-/, isJavaScriptProtocol = /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*:/i;
 	function sanitizeURL(url) {
 		return isJavaScriptProtocol.test("" + url) ? "javascript:throw new Error('React has blocked a javascript: URL as a security precaution.')" : url;
 	}
-	var ReactSharedInternals = React.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
-	var ReactDOMSharedInternals = ReactDOM.__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
-	var sharedNotPendingObject = {
+	var ReactSharedInternals = React.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, ReactDOMSharedInternals = ReactDOM.__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, sharedNotPendingObject = {
 		pending: !1,
 		data: null,
 		method: null,
 		action: null
-	};
-	var previousDispatcher = ReactDOMSharedInternals.d;
+	}, previousDispatcher = ReactDOMSharedInternals.d;
 	ReactDOMSharedInternals.d = {
 		f: previousDispatcher.f,
 		r: previousDispatcher.r,
@@ -5689,9 +6047,7 @@ var require_react_dom_server_legacy_node_production = /* @__PURE__ */ __commonJS
 		S: preinitStyle,
 		M: preinitModuleScript
 	};
-	var PRELOAD_NO_CREDS = [];
-	var currentlyFlushingRenderState = null;
-	var scriptRegex = /(<\/|<)(s)(cript)/gi;
+	var PRELOAD_NO_CREDS = [], currentlyFlushingRenderState = null, scriptRegex = /(<\/|<)(s)(cript)/gi;
 	function scriptReplacer(match, prefix, s, suffix) {
 		return "" + prefix + ("s" === s ? "\\u0073" : "\\u0053") + suffix;
 	}
@@ -6096,8 +6452,7 @@ var require_react_dom_server_legacy_node_production = /* @__PURE__ */ __commonJS
 		pushInnerHTML(target, innerHTML, tag);
 		return "string" === typeof tag ? (target.push(escapeTextForBrowser(tag)), null) : tag;
 	}
-	var VALID_TAG_REGEX = /^[a-zA-Z][a-zA-Z:_\.\-\d]*$/;
-	var validatedTagCache = /* @__PURE__ */ new Map();
+	var VALID_TAG_REGEX = /^[a-zA-Z][a-zA-Z:_\.\-\d]*$/, validatedTagCache = /* @__PURE__ */ new Map();
 	function startChunkForTag(tag) {
 		var tagStartChunk = validatedTagCache.get(tag);
 		if (void 0 === tagStartChunk) {
@@ -6744,8 +7099,7 @@ var require_react_dom_server_legacy_node_production = /* @__PURE__ */ __commonJS
 			}
 		});
 	}
-	var currentlyRenderingBoundaryHasStylesToHoist = !1;
-	var destinationHasCapacity = !0;
+	var currentlyRenderingBoundaryHasStylesToHoist = !1, destinationHasCapacity = !0;
 	function flushStyleTagsLateForBoundary(styleQueue) {
 		var rules = styleQueue.rules, hrefs = styleQueue.hrefs, i = 0;
 		if (hrefs.length) {
@@ -7238,8 +7592,7 @@ var require_react_dom_server_legacy_node_production = /* @__PURE__ */ __commonJS
 	function pushSegmentFinale(target, renderState, lastPushedText, textEmbedded) {
 		renderState.generateStaticMarkup || lastPushedText && textEmbedded && target.push("<!-- -->");
 	}
-	var bind = Function.prototype.bind;
-	var REACT_CLIENT_REFERENCE = Symbol.for("react.client.reference");
+	var bind = Function.prototype.bind, REACT_CLIENT_REFERENCE = Symbol.for("react.client.reference");
 	function getComponentNameFromType(type) {
 		if (null == type) return null;
 		if ("function" === typeof type) return type.$$typeof === REACT_CLIENT_REFERENCE ? null : type.displayName || type.name || null;
@@ -7271,8 +7624,7 @@ var require_react_dom_server_legacy_node_production = /* @__PURE__ */ __commonJS
 		}
 		return null;
 	}
-	var emptyContextObject = {};
-	var currentActiveSnapshot = null;
+	var emptyContextObject = {}, currentActiveSnapshot = null;
 	function popToNearestCommonAncestor(prev, next) {
 		if (prev !== next) {
 			prev.context._currentValue2 = prev.parentValue;
@@ -7324,8 +7676,7 @@ var require_react_dom_server_legacy_node_production = /* @__PURE__ */ __commonJS
 			inst.queue = [payload];
 		},
 		enqueueForceUpdate: function() {}
-	};
-	var emptyTreeContext = {
+	}, emptyTreeContext = {
 		id: 1,
 		overflow: ""
 	};
@@ -7351,9 +7702,7 @@ var require_react_dom_server_legacy_node_production = /* @__PURE__ */ __commonJS
 			overflow: baseContext
 		};
 	}
-	var clz32 = Math.clz32 ? Math.clz32 : clz32Fallback;
-	var log = Math.log;
-	var LN2 = Math.LN2;
+	var clz32 = Math.clz32 ? Math.clz32 : clz32Fallback, log = Math.log, LN2 = Math.LN2;
 	function clz32Fallback(x) {
 		x >>>= 0;
 		return 0 === x ? 32 : 31 - (log(x) / LN2 | 0) | 0;
@@ -7398,22 +7747,7 @@ var require_react_dom_server_legacy_node_production = /* @__PURE__ */ __commonJS
 	function is(x, y) {
 		return x === y && (0 !== x || 1 / x === 1 / y) || x !== x && y !== y;
 	}
-	var objectIs = "function" === typeof Object.is ? Object.is : is;
-	var currentlyRenderingComponent = null;
-	var currentlyRenderingTask = null;
-	var currentlyRenderingRequest = null;
-	var currentlyRenderingKeyPath = null;
-	var firstWorkInProgressHook = null;
-	var workInProgressHook = null;
-	var isReRender = !1;
-	var didScheduleRenderPhaseUpdate = !1;
-	var localIdCounter = 0;
-	var actionStateCounter = 0;
-	var actionStateMatchingIndex = -1;
-	var thenableIndexCounter = 0;
-	var thenableState = null;
-	var renderPhaseUpdates = null;
-	var numberOfReRenders = 0;
+	var objectIs = "function" === typeof Object.is ? Object.is : is, currentlyRenderingComponent = null, currentlyRenderingTask = null, currentlyRenderingRequest = null, currentlyRenderingKeyPath = null, firstWorkInProgressHook = null, workInProgressHook = null, isReRender = !1, didScheduleRenderPhaseUpdate = !1, localIdCounter = 0, actionStateCounter = 0, actionStateMatchingIndex = -1, thenableIndexCounter = 0, thenableState = null, renderPhaseUpdates = null, numberOfReRenders = 0;
 	function resolveCurrentlyRenderingComponent() {
 		if (null === currentlyRenderingComponent) throw Error("Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more than one copy of React in the same app\nSee https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem.");
 		return currentlyRenderingComponent;
@@ -7648,18 +7982,14 @@ var require_react_dom_server_legacy_node_production = /* @__PURE__ */ __commonJS
 		useEffectEvent: function() {
 			return throwOnUseEffectEventCall;
 		}
-	};
-	var currentResumableState = null;
-	var DefaultAsyncDispatcher = {
+	}, currentResumableState = null, DefaultAsyncDispatcher = {
 		getCacheForType: function() {
 			throw Error("Not implemented.");
 		},
 		cacheSignal: function() {
 			throw Error("Not implemented.");
 		}
-	};
-	var prefix;
-	var suffix;
+	}, prefix, suffix;
 	function describeBuiltInComponentFrame(name) {
 		if (void 0 === prefix) try {
 			throw Error();
@@ -9360,7 +9690,7 @@ var require_react_dom_server_legacy_node_production = /* @__PURE__ */ __commonJS
 	exports.renderToString = function(children, options) {
 		return renderToStringImpl(children, options, !1, "The server used \"renderToString\" which does not support Suspense. If you intended for this Suspense boundary to render the fallback content on the server consider throwing an Error somewhere within the Suspense boundary. If you intended to have the server wait for the suspended component please switch to \"renderToPipeableStream\" which supports Suspense on the server");
 	};
-	exports.version = "19.2.8";
+	exports.version = "19.2.5";
 }));
 //#endregion
 //#region node_modules/react-dom/cjs/react-dom-server.node.production.js
@@ -9374,56 +9704,30 @@ var require_react_dom_server_legacy_node_production = /* @__PURE__ */ __commonJS
 * LICENSE file in the root directory of this source tree.
 */
 var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var util = __require("util");
-	var crypto = __require("crypto");
-	var async_hooks = __require("async_hooks");
-	var React = require_react();
-	var ReactDOM = require_react_dom();
-	var stream = __require("stream");
-	var REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element");
-	var REACT_PORTAL_TYPE = Symbol.for("react.portal");
-	var REACT_FRAGMENT_TYPE = Symbol.for("react.fragment");
-	var REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode");
-	var REACT_PROFILER_TYPE = Symbol.for("react.profiler");
-	var REACT_CONSUMER_TYPE = Symbol.for("react.consumer");
-	var REACT_CONTEXT_TYPE = Symbol.for("react.context");
-	var REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref");
-	var REACT_SUSPENSE_TYPE = Symbol.for("react.suspense");
-	var REACT_SUSPENSE_LIST_TYPE = Symbol.for("react.suspense_list");
-	var REACT_MEMO_TYPE = Symbol.for("react.memo");
-	var REACT_LAZY_TYPE = Symbol.for("react.lazy");
-	var REACT_SCOPE_TYPE = Symbol.for("react.scope");
-	var REACT_ACTIVITY_TYPE = Symbol.for("react.activity");
-	var REACT_LEGACY_HIDDEN_TYPE = Symbol.for("react.legacy_hidden");
-	var REACT_MEMO_CACHE_SENTINEL = Symbol.for("react.memo_cache_sentinel");
-	var REACT_VIEW_TRANSITION_TYPE = Symbol.for("react.view_transition");
-	var MAYBE_ITERATOR_SYMBOL = Symbol.iterator;
+	var util = __require("util"), crypto = __require("crypto"), async_hooks = __require("async_hooks"), React = require_react(), ReactDOM = require_react_dom(), stream = __require("stream"), REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = Symbol.for("react.profiler"), REACT_CONSUMER_TYPE = Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = Symbol.for("react.context"), REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = Symbol.for("react.suspense"), REACT_SUSPENSE_LIST_TYPE = Symbol.for("react.suspense_list"), REACT_MEMO_TYPE = Symbol.for("react.memo"), REACT_LAZY_TYPE = Symbol.for("react.lazy"), REACT_SCOPE_TYPE = Symbol.for("react.scope"), REACT_ACTIVITY_TYPE = Symbol.for("react.activity"), REACT_LEGACY_HIDDEN_TYPE = Symbol.for("react.legacy_hidden"), REACT_MEMO_CACHE_SENTINEL = Symbol.for("react.memo_cache_sentinel"), REACT_VIEW_TRANSITION_TYPE = Symbol.for("react.view_transition"), MAYBE_ITERATOR_SYMBOL = Symbol.iterator;
 	function getIteratorFn(maybeIterable) {
 		if (null === maybeIterable || "object" !== typeof maybeIterable) return null;
 		maybeIterable = MAYBE_ITERATOR_SYMBOL && maybeIterable[MAYBE_ITERATOR_SYMBOL] || maybeIterable["@@iterator"];
 		return "function" === typeof maybeIterable ? maybeIterable : null;
 	}
-	var isArrayImpl = Array.isArray;
-	var scheduleMicrotask = queueMicrotask;
+	var isArrayImpl = Array.isArray, scheduleMicrotask = queueMicrotask;
 	function flushBuffered(destination) {
 		"function" === typeof destination.flush && destination.flush();
 	}
-	var currentView = null;
-	var writtenBytes = 0;
-	var destinationHasCapacity$1 = !0;
+	var currentView = null, writtenBytes = 0, destinationHasCapacity$1 = !0;
 	function writeChunk(destination, chunk) {
 		if ("string" === typeof chunk) {
-			if (0 !== chunk.length) if (2048 < 3 * chunk.length) 0 < writtenBytes && (writeToDestination(destination, currentView.subarray(0, writtenBytes)), currentView = /* @__PURE__ */ new Uint8Array(2048), writtenBytes = 0), writeToDestination(destination, chunk);
+			if (0 !== chunk.length) if (2048 < 3 * chunk.length) 0 < writtenBytes && (writeToDestination(destination, currentView.subarray(0, writtenBytes)), currentView = new Uint8Array(2048), writtenBytes = 0), writeToDestination(destination, chunk);
 			else {
 				var target = currentView;
 				0 < writtenBytes && (target = currentView.subarray(writtenBytes));
 				target = textEncoder.encodeInto(chunk, target);
 				var read = target.read;
 				writtenBytes += target.written;
-				read < chunk.length && (writeToDestination(destination, currentView.subarray(0, writtenBytes)), currentView = /* @__PURE__ */ new Uint8Array(2048), writtenBytes = textEncoder.encodeInto(chunk.slice(read), currentView).written);
-				2048 === writtenBytes && (writeToDestination(destination, currentView), currentView = /* @__PURE__ */ new Uint8Array(2048), writtenBytes = 0);
+				read < chunk.length && (writeToDestination(destination, currentView.subarray(0, writtenBytes)), currentView = new Uint8Array(2048), writtenBytes = textEncoder.encodeInto(chunk.slice(read), currentView).written);
+				2048 === writtenBytes && (writeToDestination(destination, currentView), currentView = new Uint8Array(2048), writtenBytes = 0);
 			}
-		} else 0 !== chunk.byteLength && (2048 < chunk.byteLength ? (0 < writtenBytes && (writeToDestination(destination, currentView.subarray(0, writtenBytes)), currentView = /* @__PURE__ */ new Uint8Array(2048), writtenBytes = 0), writeToDestination(destination, chunk)) : (target = currentView.length - writtenBytes, target < chunk.byteLength && (0 === target ? writeToDestination(destination, currentView) : (currentView.set(chunk.subarray(0, target), writtenBytes), writtenBytes += target, writeToDestination(destination, currentView), chunk = chunk.subarray(target)), currentView = /* @__PURE__ */ new Uint8Array(2048), writtenBytes = 0), currentView.set(chunk, writtenBytes), writtenBytes += chunk.byteLength, 2048 === writtenBytes && (writeToDestination(destination, currentView), currentView = /* @__PURE__ */ new Uint8Array(2048), writtenBytes = 0)));
+		} else 0 !== chunk.byteLength && (2048 < chunk.byteLength ? (0 < writtenBytes && (writeToDestination(destination, currentView.subarray(0, writtenBytes)), currentView = new Uint8Array(2048), writtenBytes = 0), writeToDestination(destination, chunk)) : (target = currentView.length - writtenBytes, target < chunk.byteLength && (0 === target ? writeToDestination(destination, currentView) : (currentView.set(chunk.subarray(0, target), writtenBytes), writtenBytes += target, writeToDestination(destination, currentView), chunk = chunk.subarray(target)), currentView = new Uint8Array(2048), writtenBytes = 0), currentView.set(chunk, writtenBytes), writtenBytes += chunk.byteLength, 2048 === writtenBytes && (writeToDestination(destination, currentView), currentView = new Uint8Array(2048), writtenBytes = 0)));
 	}
 	function writeToDestination(destination, view) {
 		destination = destination.write(view);
@@ -9446,11 +9750,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 	function byteLengthOfChunk(chunk) {
 		return "string" === typeof chunk ? Buffer.byteLength(chunk, "utf8") : chunk.byteLength;
 	}
-	var assign = Object.assign;
-	var hasOwnProperty = Object.prototype.hasOwnProperty;
-	var VALID_ATTRIBUTE_NAME_REGEX = RegExp("^[:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD][:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040]*$");
-	var illegalAttributeNameCache = {};
-	var validatedAttributeNameCache = {};
+	var assign = Object.assign, hasOwnProperty = Object.prototype.hasOwnProperty, VALID_ATTRIBUTE_NAME_REGEX = RegExp("^[:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD][:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040]*$"), illegalAttributeNameCache = {}, validatedAttributeNameCache = {};
 	function isAttributeNameSafe(attributeName) {
 		if (hasOwnProperty.call(validatedAttributeNameCache, attributeName)) return !0;
 		if (hasOwnProperty.call(illegalAttributeNameCache, attributeName)) return !1;
@@ -9458,8 +9758,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 		illegalAttributeNameCache[attributeName] = !0;
 		return !1;
 	}
-	var unitlessNumbers = new Set("animationIterationCount aspectRatio borderImageOutset borderImageSlice borderImageWidth boxFlex boxFlexGroup boxOrdinalGroup columnCount columns flex flexGrow flexPositive flexShrink flexNegative flexOrder gridArea gridRow gridRowEnd gridRowSpan gridRowStart gridColumn gridColumnEnd gridColumnSpan gridColumnStart fontWeight lineClamp lineHeight opacity order orphans scale tabSize widows zIndex zoom fillOpacity floodOpacity stopOpacity strokeDasharray strokeDashoffset strokeMiterlimit strokeOpacity strokeWidth MozAnimationIterationCount MozBoxFlex MozBoxFlexGroup MozLineClamp msAnimationIterationCount msFlex msZoom msFlexGrow msFlexNegative msFlexOrder msFlexPositive msFlexShrink msGridColumn msGridColumnSpan msGridRow msGridRowSpan WebkitAnimationIterationCount WebkitBoxFlex WebKitBoxFlexGroup WebkitBoxOrdinalGroup WebkitColumnCount WebkitColumns WebkitFlex WebkitFlexGrow WebkitFlexPositive WebkitFlexShrink WebkitLineClamp".split(" "));
-	var aliases = /* @__PURE__ */ new Map([
+	var unitlessNumbers = new Set("animationIterationCount aspectRatio borderImageOutset borderImageSlice borderImageWidth boxFlex boxFlexGroup boxOrdinalGroup columnCount columns flex flexGrow flexPositive flexShrink flexNegative flexOrder gridArea gridRow gridRowEnd gridRowSpan gridRowStart gridColumn gridColumnEnd gridColumnSpan gridColumnStart fontWeight lineClamp lineHeight opacity order orphans scale tabSize widows zIndex zoom fillOpacity floodOpacity stopOpacity strokeDasharray strokeDashoffset strokeMiterlimit strokeOpacity strokeWidth MozAnimationIterationCount MozBoxFlex MozBoxFlexGroup MozLineClamp msAnimationIterationCount msFlex msZoom msFlexGrow msFlexNegative msFlexOrder msFlexPositive msFlexShrink msGridColumn msGridColumnSpan msGridRow msGridRowSpan WebkitAnimationIterationCount WebkitBoxFlex WebKitBoxFlexGroup WebkitBoxOrdinalGroup WebkitColumnCount WebkitColumns WebkitFlex WebkitFlexGrow WebkitFlexPositive WebkitFlexShrink WebkitLineClamp".split(" ")), aliases = new Map([
 		["acceptCharset", "accept-charset"],
 		["htmlFor", "for"],
 		["httpEquiv", "http-equiv"],
@@ -9538,8 +9837,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 		["writingMode", "writing-mode"],
 		["xmlnsXlink", "xmlns:xlink"],
 		["xHeight", "x-height"]
-	]);
-	var matchHtmlRegExp = /["'&<>]/;
+	]), matchHtmlRegExp = /["'&<>]/;
 	function escapeTextForBrowser(text) {
 		if ("boolean" === typeof text || "number" === typeof text || "bigint" === typeof text) return "" + text;
 		text = "" + text;
@@ -9573,21 +9871,16 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 		}
 		return text;
 	}
-	var uppercasePattern = /([A-Z])/g;
-	var msPattern = /^ms-/;
-	var isJavaScriptProtocol = /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*:/i;
+	var uppercasePattern = /([A-Z])/g, msPattern = /^ms-/, isJavaScriptProtocol = /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*:/i;
 	function sanitizeURL(url) {
 		return isJavaScriptProtocol.test("" + url) ? "javascript:throw new Error('React has blocked a javascript: URL as a security precaution.')" : url;
 	}
-	var ReactSharedInternals = React.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
-	var ReactDOMSharedInternals = ReactDOM.__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
-	var sharedNotPendingObject = {
+	var ReactSharedInternals = React.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, ReactDOMSharedInternals = ReactDOM.__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, sharedNotPendingObject = {
 		pending: !1,
 		data: null,
 		method: null,
 		action: null
-	};
-	var previousDispatcher = ReactDOMSharedInternals.d;
+	}, previousDispatcher = ReactDOMSharedInternals.d;
 	ReactDOMSharedInternals.d = {
 		f: previousDispatcher.f,
 		r: previousDispatcher.r,
@@ -9599,24 +9892,13 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 		S: preinitStyle,
 		M: preinitModuleScript
 	};
-	var PRELOAD_NO_CREDS = [];
-	var currentlyFlushingRenderState = null;
+	var PRELOAD_NO_CREDS = [], currentlyFlushingRenderState = null;
 	stringToPrecomputedChunk("\"></template>");
-	var startInlineScript = stringToPrecomputedChunk("<script");
-	var endInlineScript = stringToPrecomputedChunk("<\/script>");
-	var startScriptSrc = stringToPrecomputedChunk("<script src=\"");
-	var startModuleSrc = stringToPrecomputedChunk("<script type=\"module\" src=\"");
-	var scriptNonce = stringToPrecomputedChunk(" nonce=\"");
-	var scriptIntegirty = stringToPrecomputedChunk(" integrity=\"");
-	var scriptCrossOrigin = stringToPrecomputedChunk(" crossorigin=\"");
-	var endAsyncScript = stringToPrecomputedChunk(" async=\"\"><\/script>");
-	var startInlineStyle = stringToPrecomputedChunk("<style");
-	var scriptRegex = /(<\/|<)(s)(cript)/gi;
+	var startInlineScript = stringToPrecomputedChunk("<script"), endInlineScript = stringToPrecomputedChunk("<\/script>"), startScriptSrc = stringToPrecomputedChunk("<script src=\""), startModuleSrc = stringToPrecomputedChunk("<script type=\"module\" src=\""), scriptNonce = stringToPrecomputedChunk(" nonce=\""), scriptIntegirty = stringToPrecomputedChunk(" integrity=\""), scriptCrossOrigin = stringToPrecomputedChunk(" crossorigin=\""), endAsyncScript = stringToPrecomputedChunk(" async=\"\"><\/script>"), startInlineStyle = stringToPrecomputedChunk("<style"), scriptRegex = /(<\/|<)(s)(cript)/gi;
 	function scriptReplacer(match, prefix, s, suffix) {
 		return "" + prefix + ("s" === s ? "\\u0073" : "\\u0053") + suffix;
 	}
-	var importMapScriptStart = stringToPrecomputedChunk("<script type=\"importmap\">");
-	var importMapScriptEnd = stringToPrecomputedChunk("<\/script>");
+	var importMapScriptStart = stringToPrecomputedChunk("<script type=\"importmap\">"), importMapScriptEnd = stringToPrecomputedChunk("<\/script>");
 	function createRenderState(resumableState, nonce, externalRuntimeConfig, importMap, onHeaders, maxHeadersLength) {
 		externalRuntimeConfig = "string" === typeof nonce ? nonce : nonce && nonce.script;
 		var inlineScriptWithNonce = void 0 === externalRuntimeConfig ? startInlineScript : stringToPrecomputedChunk("<script nonce=\"" + escapeTextForBrowser(externalRuntimeConfig) + "\""), nonceStyle = "string" === typeof nonce ? void 0 : nonce && nonce.style, inlineStyleWithNonce = void 0 === nonceStyle ? startInlineStyle : stringToPrecomputedChunk("<style nonce=\"" + escapeTextForBrowser(nonceStyle) + "\""), idPrefix = resumableState.idPrefix, bootstrapChunks = [], bootstrapScriptContent = resumableState.bootstrapScriptContent, bootstrapScripts = resumableState.bootstrapScripts, bootstrapModules = resumableState.bootstrapModules;
@@ -9781,10 +10063,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 		target.push(escapeTextForBrowser(text));
 		return !0;
 	}
-	var styleNameCache = /* @__PURE__ */ new Map();
-	var styleAttributeStart = stringToPrecomputedChunk(" style=\"");
-	var styleAssign = stringToPrecomputedChunk(":");
-	var styleSeparator = stringToPrecomputedChunk(";");
+	var styleNameCache = /* @__PURE__ */ new Map(), styleAttributeStart = stringToPrecomputedChunk(" style=\""), styleAssign = stringToPrecomputedChunk(":"), styleSeparator = stringToPrecomputedChunk(";");
 	function pushStyleAttribute(target, style) {
 		if ("object" !== typeof style) throw Error("The `style` prop expects a mapping from style properties to values, not a string. For example, style={{marginRight: spacing + 'em'}} when using JSX.");
 		var isFirst = !0, styleName;
@@ -9800,18 +10079,14 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 		}
 		isFirst || target.push(attributeEnd);
 	}
-	var attributeSeparator = stringToPrecomputedChunk(" ");
-	var attributeAssign = stringToPrecomputedChunk("=\"");
-	var attributeEnd = stringToPrecomputedChunk("\"");
-	var attributeEmptyString = stringToPrecomputedChunk("=\"\"");
+	var attributeSeparator = stringToPrecomputedChunk(" "), attributeAssign = stringToPrecomputedChunk("=\""), attributeEnd = stringToPrecomputedChunk("\""), attributeEmptyString = stringToPrecomputedChunk("=\"\"");
 	function pushBooleanAttribute(target, name, value) {
 		value && "function" !== typeof value && "symbol" !== typeof value && target.push(attributeSeparator, name, attributeEmptyString);
 	}
 	function pushStringAttribute(target, name, value) {
 		"function" !== typeof value && "symbol" !== typeof value && "boolean" !== typeof value && target.push(attributeSeparator, name, attributeAssign, escapeTextForBrowser(value), attributeEnd);
 	}
-	var actionJavaScriptURL = stringToPrecomputedChunk(escapeTextForBrowser("javascript:throw new Error('React form unexpectedly submitted.')"));
-	var startHiddenInputChunk = stringToPrecomputedChunk("<input type=\"hidden\"");
+	var actionJavaScriptURL = stringToPrecomputedChunk(escapeTextForBrowser("javascript:throw new Error('React form unexpectedly submitted.')")), startHiddenInputChunk = stringToPrecomputedChunk("<input type=\"hidden\"");
 	function pushAdditionalFormField(value, key) {
 		this.push(startHiddenInputChunk);
 		validateAdditionalFormField(value);
@@ -9981,8 +10256,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 			}
 		}
 	}
-	var endOfStartTag = stringToPrecomputedChunk(">");
-	var endOfStartTagSelfClosing = stringToPrecomputedChunk("/>");
+	var endOfStartTag = stringToPrecomputedChunk(">"), endOfStartTagSelfClosing = stringToPrecomputedChunk("/>");
 	function pushInnerHTML(target, innerHTML, children) {
 		if (null != innerHTML) {
 			if (null != children) throw Error("Can only set one of `children` or `props.dangerouslySetInnerHTML`.");
@@ -9998,8 +10272,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 		});
 		return content;
 	}
-	var selectedMarkerAttribute = stringToPrecomputedChunk(" selected=\"\"");
-	var formReplayingRuntimeScript = stringToPrecomputedChunk("addEventListener(\"submit\",function(a){if(!a.defaultPrevented){var c=a.target,d=a.submitter,e=c.action,b=d;if(d){var f=d.getAttribute(\"formAction\");null!=f&&(e=f,b=null)}\"javascript:throw new Error('React form unexpectedly submitted.')\"===e&&(a.preventDefault(),b?(a=document.createElement(\"input\"),a.name=b.name,a.value=b.value,b.parentNode.insertBefore(a,b),b=new FormData(c),a.parentNode.removeChild(a)):b=new FormData(c),a=c.ownerDocument||c,(a.$$reactFormReplay=a.$$reactFormReplay||[]).push(c,d,b))}});");
+	var selectedMarkerAttribute = stringToPrecomputedChunk(" selected=\"\""), formReplayingRuntimeScript = stringToPrecomputedChunk("addEventListener(\"submit\",function(a){if(!a.defaultPrevented){var c=a.target,d=a.submitter,e=c.action,b=d;if(d){var f=d.getAttribute(\"formAction\");null!=f&&(e=f,b=null)}\"javascript:throw new Error('React form unexpectedly submitted.')\"===e&&(a.preventDefault(),b?(a=document.createElement(\"input\"),a.name=b.name,a.value=b.value,b.parentNode.insertBefore(a,b),b=new FormData(c),a.parentNode.removeChild(a)):b=new FormData(c),a=c.ownerDocument||c,(a.$$reactFormReplay=a.$$reactFormReplay||[]).push(c,d,b))}});");
 	function injectFormReplayingRuntime(resumableState, renderState) {
 		if (0 === (resumableState.instructions & 16)) {
 			resumableState.instructions |= 16;
@@ -10007,8 +10280,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 			(preamble.htmlChunks || preamble.headChunks) && 0 === bootstrapChunks.length ? (bootstrapChunks.push(renderState.startInlineScript), pushCompletedShellIdAttribute(bootstrapChunks, resumableState), bootstrapChunks.push(endOfStartTag, formReplayingRuntimeScript, endInlineScript)) : bootstrapChunks.unshift(renderState.startInlineScript, endOfStartTag, formReplayingRuntimeScript, endInlineScript);
 		}
 	}
-	var formStateMarkerIsMatching = stringToPrecomputedChunk("<!--F!-->");
-	var formStateMarkerIsNotMatching = stringToPrecomputedChunk("<!--F-->");
+	var formStateMarkerIsMatching = stringToPrecomputedChunk("<!--F!-->"), formStateMarkerIsNotMatching = stringToPrecomputedChunk("<!--F-->");
 	function pushLinkImpl(target, props) {
 		target.push(startChunkForTag("link"));
 		for (var propKey in props) if (hasOwnProperty.call(props, propKey)) {
@@ -10061,9 +10333,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 		target.push(endChunkForTag("title"));
 		return null;
 	}
-	var headPreambleContributionChunk = stringToPrecomputedChunk("<!--head-->");
-	var bodyPreambleContributionChunk = stringToPrecomputedChunk("<!--body-->");
-	var htmlPreambleContributionChunk = stringToPrecomputedChunk("<!--html-->");
+	var headPreambleContributionChunk = stringToPrecomputedChunk("<!--head-->"), bodyPreambleContributionChunk = stringToPrecomputedChunk("<!--body-->"), htmlPreambleContributionChunk = stringToPrecomputedChunk("<!--html-->");
 	function pushScriptImpl(target, props) {
 		target.push(startChunkForTag("script"));
 		var children = null, innerHTML = null, propKey;
@@ -10123,9 +10393,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 		pushInnerHTML(target, innerHTML, tag);
 		return "string" === typeof tag ? (target.push(escapeTextForBrowser(tag)), null) : tag;
 	}
-	var leadingNewline = stringToPrecomputedChunk("\n");
-	var VALID_TAG_REGEX = /^[a-zA-Z][a-zA-Z:_\.\-\d]*$/;
-	var validatedTagCache = /* @__PURE__ */ new Map();
+	var leadingNewline = stringToPrecomputedChunk("\n"), VALID_TAG_REGEX = /^[a-zA-Z][a-zA-Z:_\.\-\d]*$/, validatedTagCache = /* @__PURE__ */ new Map();
 	function startChunkForTag(tag) {
 		var tagStartChunk = validatedTagCache.get(tag);
 		if (void 0 === tagStartChunk) {
@@ -10711,19 +10979,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 		for (var i = 0; i < renderState.length - 1; i++) writeChunk(destination, renderState[i]);
 		return i < renderState.length ? (i = renderState[i], renderState.length = 0, writeChunkAndReturn(destination, i)) : !0;
 	}
-	var shellTimeRuntimeScript = stringToPrecomputedChunk("requestAnimationFrame(function(){$RT=performance.now()});");
-	var placeholder1 = stringToPrecomputedChunk("<template id=\"");
-	var placeholder2 = stringToPrecomputedChunk("\"></template>");
-	var startActivityBoundary = stringToPrecomputedChunk("<!--&-->");
-	var endActivityBoundary = stringToPrecomputedChunk("<!--/&-->");
-	var startCompletedSuspenseBoundary = stringToPrecomputedChunk("<!--$-->");
-	var startPendingSuspenseBoundary1 = stringToPrecomputedChunk("<!--$?--><template id=\"");
-	var startPendingSuspenseBoundary2 = stringToPrecomputedChunk("\"></template>");
-	var startClientRenderedSuspenseBoundary = stringToPrecomputedChunk("<!--$!-->");
-	var endSuspenseBoundary = stringToPrecomputedChunk("<!--/$-->");
-	var clientRenderedSuspenseBoundaryError1 = stringToPrecomputedChunk("<template");
-	var clientRenderedSuspenseBoundaryErrorAttrInterstitial = stringToPrecomputedChunk("\"");
-	var clientRenderedSuspenseBoundaryError1A = stringToPrecomputedChunk(" data-dgst=\"");
+	var shellTimeRuntimeScript = stringToPrecomputedChunk("requestAnimationFrame(function(){$RT=performance.now()});"), placeholder1 = stringToPrecomputedChunk("<template id=\""), placeholder2 = stringToPrecomputedChunk("\"></template>"), startActivityBoundary = stringToPrecomputedChunk("<!--&-->"), endActivityBoundary = stringToPrecomputedChunk("<!--/&-->"), startCompletedSuspenseBoundary = stringToPrecomputedChunk("<!--$-->"), startPendingSuspenseBoundary1 = stringToPrecomputedChunk("<!--$?--><template id=\""), startPendingSuspenseBoundary2 = stringToPrecomputedChunk("\"></template>"), startClientRenderedSuspenseBoundary = stringToPrecomputedChunk("<!--$!-->"), endSuspenseBoundary = stringToPrecomputedChunk("<!--/$-->"), clientRenderedSuspenseBoundaryError1 = stringToPrecomputedChunk("<template"), clientRenderedSuspenseBoundaryErrorAttrInterstitial = stringToPrecomputedChunk("\""), clientRenderedSuspenseBoundaryError1A = stringToPrecomputedChunk(" data-dgst=\"");
 	stringToPrecomputedChunk(" data-msg=\"");
 	stringToPrecomputedChunk(" data-stck=\"");
 	stringToPrecomputedChunk(" data-cstck=\"");
@@ -10735,27 +10991,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 		writeChunk(destination, id.toString(16));
 		return writeChunkAndReturn(destination, startPendingSuspenseBoundary2);
 	}
-	var startSegmentHTML = stringToPrecomputedChunk("<div hidden id=\"");
-	var startSegmentHTML2 = stringToPrecomputedChunk("\">");
-	var endSegmentHTML = stringToPrecomputedChunk("</div>");
-	var startSegmentSVG = stringToPrecomputedChunk("<svg aria-hidden=\"true\" style=\"display:none\" id=\"");
-	var startSegmentSVG2 = stringToPrecomputedChunk("\">");
-	var endSegmentSVG = stringToPrecomputedChunk("</svg>");
-	var startSegmentMathML = stringToPrecomputedChunk("<math aria-hidden=\"true\" style=\"display:none\" id=\"");
-	var startSegmentMathML2 = stringToPrecomputedChunk("\">");
-	var endSegmentMathML = stringToPrecomputedChunk("</math>");
-	var startSegmentTable = stringToPrecomputedChunk("<table hidden id=\"");
-	var startSegmentTable2 = stringToPrecomputedChunk("\">");
-	var endSegmentTable = stringToPrecomputedChunk("</table>");
-	var startSegmentTableBody = stringToPrecomputedChunk("<table hidden><tbody id=\"");
-	var startSegmentTableBody2 = stringToPrecomputedChunk("\">");
-	var endSegmentTableBody = stringToPrecomputedChunk("</tbody></table>");
-	var startSegmentTableRow = stringToPrecomputedChunk("<table hidden><tr id=\"");
-	var startSegmentTableRow2 = stringToPrecomputedChunk("\">");
-	var endSegmentTableRow = stringToPrecomputedChunk("</tr></table>");
-	var startSegmentColGroup = stringToPrecomputedChunk("<table hidden><colgroup id=\"");
-	var startSegmentColGroup2 = stringToPrecomputedChunk("\">");
-	var endSegmentColGroup = stringToPrecomputedChunk("</colgroup></table>");
+	var startSegmentHTML = stringToPrecomputedChunk("<div hidden id=\""), startSegmentHTML2 = stringToPrecomputedChunk("\">"), endSegmentHTML = stringToPrecomputedChunk("</div>"), startSegmentSVG = stringToPrecomputedChunk("<svg aria-hidden=\"true\" style=\"display:none\" id=\""), startSegmentSVG2 = stringToPrecomputedChunk("\">"), endSegmentSVG = stringToPrecomputedChunk("</svg>"), startSegmentMathML = stringToPrecomputedChunk("<math aria-hidden=\"true\" style=\"display:none\" id=\""), startSegmentMathML2 = stringToPrecomputedChunk("\">"), endSegmentMathML = stringToPrecomputedChunk("</math>"), startSegmentTable = stringToPrecomputedChunk("<table hidden id=\""), startSegmentTable2 = stringToPrecomputedChunk("\">"), endSegmentTable = stringToPrecomputedChunk("</table>"), startSegmentTableBody = stringToPrecomputedChunk("<table hidden><tbody id=\""), startSegmentTableBody2 = stringToPrecomputedChunk("\">"), endSegmentTableBody = stringToPrecomputedChunk("</tbody></table>"), startSegmentTableRow = stringToPrecomputedChunk("<table hidden><tr id=\""), startSegmentTableRow2 = stringToPrecomputedChunk("\">"), endSegmentTableRow = stringToPrecomputedChunk("</tr></table>"), startSegmentColGroup = stringToPrecomputedChunk("<table hidden><colgroup id=\""), startSegmentColGroup2 = stringToPrecomputedChunk("\">"), endSegmentColGroup = stringToPrecomputedChunk("</colgroup></table>");
 	function writeStartSegment(destination, renderState, formatContext, id) {
 		switch (formatContext.insertionMode) {
 			case 0:
@@ -10786,30 +11022,15 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 			default: throw Error("Unknown insertion mode. This is a bug in React.");
 		}
 	}
-	var completeSegmentScript1Full = stringToPrecomputedChunk("$RS=function(a,b){a=document.getElementById(a);b=document.getElementById(b);for(a.parentNode.removeChild(a);a.firstChild;)b.parentNode.insertBefore(a.firstChild,b);b.parentNode.removeChild(b)};$RS(\"");
-	var completeSegmentScript1Partial = stringToPrecomputedChunk("$RS(\"");
-	var completeSegmentScript2 = stringToPrecomputedChunk("\",\"");
-	var completeSegmentScriptEnd = stringToPrecomputedChunk("\")<\/script>");
+	var completeSegmentScript1Full = stringToPrecomputedChunk("$RS=function(a,b){a=document.getElementById(a);b=document.getElementById(b);for(a.parentNode.removeChild(a);a.firstChild;)b.parentNode.insertBefore(a.firstChild,b);b.parentNode.removeChild(b)};$RS(\""), completeSegmentScript1Partial = stringToPrecomputedChunk("$RS(\""), completeSegmentScript2 = stringToPrecomputedChunk("\",\""), completeSegmentScriptEnd = stringToPrecomputedChunk("\")<\/script>");
 	stringToPrecomputedChunk("<template data-rsi=\"\" data-sid=\"");
 	stringToPrecomputedChunk("\" data-pid=\"");
-	var completeBoundaryScriptFunctionOnly = stringToPrecomputedChunk("$RB=[];$RV=function(a){$RT=performance.now();for(var b=0;b<a.length;b+=2){var c=a[b],e=a[b+1];null!==e.parentNode&&e.parentNode.removeChild(e);var f=c.parentNode;if(f){var g=c.previousSibling,h=0;do{if(c&&8===c.nodeType){var d=c.data;if(\"/$\"===d||\"/&\"===d)if(0===h)break;else h--;else\"$\"!==d&&\"$?\"!==d&&\"$~\"!==d&&\"$!\"!==d&&\"&\"!==d||h++}d=c.nextSibling;f.removeChild(c);c=d}while(c);for(;e.firstChild;)f.insertBefore(e.firstChild,c);g.data=\"$\";g._reactRetry&&requestAnimationFrame(g._reactRetry)}}a.length=0};\n$RC=function(a,b){if(b=document.getElementById(b))(a=document.getElementById(a))?(a.previousSibling.data=\"$~\",$RB.push(a,b),2===$RB.length&&(\"number\"!==typeof $RT?requestAnimationFrame($RV.bind(null,$RB)):(a=performance.now(),setTimeout($RV.bind(null,$RB),2300>a&&2E3<a?2300-a:$RT+300-a)))):b.parentNode.removeChild(b)};");
-	var completeBoundaryScript1Partial = stringToPrecomputedChunk("$RC(\"");
-	var completeBoundaryWithStylesScript1FullPartial = stringToPrecomputedChunk("$RM=new Map;$RR=function(n,w,p){function u(q){this._p=null;q()}for(var r=new Map,t=document,h,b,e=t.querySelectorAll(\"link[data-precedence],style[data-precedence]\"),v=[],k=0;b=e[k++];)\"not all\"===b.getAttribute(\"media\")?v.push(b):(\"LINK\"===b.tagName&&$RM.set(b.getAttribute(\"href\"),b),r.set(b.dataset.precedence,h=b));e=0;b=[];var l,a;for(k=!0;;){if(k){var f=p[e++];if(!f){k=!1;e=0;continue}var c=!1,m=0;var d=f[m++];if(a=$RM.get(d)){var g=a._p;c=!0}else{a=t.createElement(\"link\");a.href=d;a.rel=\n\"stylesheet\";for(a.dataset.precedence=l=f[m++];g=f[m++];)a.setAttribute(g,f[m++]);g=a._p=new Promise(function(q,x){a.onload=u.bind(a,q);a.onerror=u.bind(a,x)});$RM.set(d,a)}d=a.getAttribute(\"media\");!g||d&&!matchMedia(d).matches||b.push(g);if(c)continue}else{a=v[e++];if(!a)break;l=a.getAttribute(\"data-precedence\");a.removeAttribute(\"media\")}c=r.get(l)||h;c===h&&(h=a);r.set(l,a);c?c.parentNode.insertBefore(a,c.nextSibling):(c=t.head,c.insertBefore(a,c.firstChild))}if(p=document.getElementById(n))p.previousSibling.data=\n\"$~\";Promise.all(b).then($RC.bind(null,n,w),$RX.bind(null,n,\"CSS failed to load\"))};$RR(\"");
-	var completeBoundaryWithStylesScript1Partial = stringToPrecomputedChunk("$RR(\"");
-	var completeBoundaryScript2 = stringToPrecomputedChunk("\",\"");
-	var completeBoundaryScript3a = stringToPrecomputedChunk("\",");
-	var completeBoundaryScript3b = stringToPrecomputedChunk("\"");
-	var completeBoundaryScriptEnd = stringToPrecomputedChunk(")<\/script>");
+	var completeBoundaryScriptFunctionOnly = stringToPrecomputedChunk("$RB=[];$RV=function(a){$RT=performance.now();for(var b=0;b<a.length;b+=2){var c=a[b],e=a[b+1];null!==e.parentNode&&e.parentNode.removeChild(e);var f=c.parentNode;if(f){var g=c.previousSibling,h=0;do{if(c&&8===c.nodeType){var d=c.data;if(\"/$\"===d||\"/&\"===d)if(0===h)break;else h--;else\"$\"!==d&&\"$?\"!==d&&\"$~\"!==d&&\"$!\"!==d&&\"&\"!==d||h++}d=c.nextSibling;f.removeChild(c);c=d}while(c);for(;e.firstChild;)f.insertBefore(e.firstChild,c);g.data=\"$\";g._reactRetry&&requestAnimationFrame(g._reactRetry)}}a.length=0};\n$RC=function(a,b){if(b=document.getElementById(b))(a=document.getElementById(a))?(a.previousSibling.data=\"$~\",$RB.push(a,b),2===$RB.length&&(\"number\"!==typeof $RT?requestAnimationFrame($RV.bind(null,$RB)):(a=performance.now(),setTimeout($RV.bind(null,$RB),2300>a&&2E3<a?2300-a:$RT+300-a)))):b.parentNode.removeChild(b)};"), completeBoundaryScript1Partial = stringToPrecomputedChunk("$RC(\""), completeBoundaryWithStylesScript1FullPartial = stringToPrecomputedChunk("$RM=new Map;$RR=function(n,w,p){function u(q){this._p=null;q()}for(var r=new Map,t=document,h,b,e=t.querySelectorAll(\"link[data-precedence],style[data-precedence]\"),v=[],k=0;b=e[k++];)\"not all\"===b.getAttribute(\"media\")?v.push(b):(\"LINK\"===b.tagName&&$RM.set(b.getAttribute(\"href\"),b),r.set(b.dataset.precedence,h=b));e=0;b=[];var l,a;for(k=!0;;){if(k){var f=p[e++];if(!f){k=!1;e=0;continue}var c=!1,m=0;var d=f[m++];if(a=$RM.get(d)){var g=a._p;c=!0}else{a=t.createElement(\"link\");a.href=d;a.rel=\n\"stylesheet\";for(a.dataset.precedence=l=f[m++];g=f[m++];)a.setAttribute(g,f[m++]);g=a._p=new Promise(function(q,x){a.onload=u.bind(a,q);a.onerror=u.bind(a,x)});$RM.set(d,a)}d=a.getAttribute(\"media\");!g||d&&!matchMedia(d).matches||b.push(g);if(c)continue}else{a=v[e++];if(!a)break;l=a.getAttribute(\"data-precedence\");a.removeAttribute(\"media\")}c=r.get(l)||h;c===h&&(h=a);r.set(l,a);c?c.parentNode.insertBefore(a,c.nextSibling):(c=t.head,c.insertBefore(a,c.firstChild))}if(p=document.getElementById(n))p.previousSibling.data=\n\"$~\";Promise.all(b).then($RC.bind(null,n,w),$RX.bind(null,n,\"CSS failed to load\"))};$RR(\""), completeBoundaryWithStylesScript1Partial = stringToPrecomputedChunk("$RR(\""), completeBoundaryScript2 = stringToPrecomputedChunk("\",\""), completeBoundaryScript3a = stringToPrecomputedChunk("\","), completeBoundaryScript3b = stringToPrecomputedChunk("\""), completeBoundaryScriptEnd = stringToPrecomputedChunk(")<\/script>");
 	stringToPrecomputedChunk("<template data-rci=\"\" data-bid=\"");
 	stringToPrecomputedChunk("<template data-rri=\"\" data-bid=\"");
 	stringToPrecomputedChunk("\" data-sid=\"");
 	stringToPrecomputedChunk("\" data-sty=\"");
-	var clientRenderScriptFunctionOnly = stringToPrecomputedChunk("$RX=function(b,c,d,e,f){var a=document.getElementById(b);a&&(b=a.previousSibling,b.data=\"$!\",a=a.dataset,c&&(a.dgst=c),d&&(a.msg=d),e&&(a.stck=e),f&&(a.cstck=f),b._reactRetry&&b._reactRetry())};");
-	var clientRenderScript1Full = stringToPrecomputedChunk("$RX=function(b,c,d,e,f){var a=document.getElementById(b);a&&(b=a.previousSibling,b.data=\"$!\",a=a.dataset,c&&(a.dgst=c),d&&(a.msg=d),e&&(a.stck=e),f&&(a.cstck=f),b._reactRetry&&b._reactRetry())};;$RX(\"");
-	var clientRenderScript1Partial = stringToPrecomputedChunk("$RX(\"");
-	var clientRenderScript1A = stringToPrecomputedChunk("\"");
-	var clientRenderErrorScriptArgInterstitial = stringToPrecomputedChunk(",");
-	var clientRenderScriptEnd = stringToPrecomputedChunk(")<\/script>");
+	var clientRenderScriptFunctionOnly = stringToPrecomputedChunk("$RX=function(b,c,d,e,f){var a=document.getElementById(b);a&&(b=a.previousSibling,b.data=\"$!\",a=a.dataset,c&&(a.dgst=c),d&&(a.msg=d),e&&(a.stck=e),f&&(a.cstck=f),b._reactRetry&&b._reactRetry())};"), clientRenderScript1Full = stringToPrecomputedChunk("$RX=function(b,c,d,e,f){var a=document.getElementById(b);a&&(b=a.previousSibling,b.data=\"$!\",a=a.dataset,c&&(a.dgst=c),d&&(a.msg=d),e&&(a.stck=e),f&&(a.cstck=f),b._reactRetry&&b._reactRetry())};;$RX(\""), clientRenderScript1Partial = stringToPrecomputedChunk("$RX(\""), clientRenderScript1A = stringToPrecomputedChunk("\""), clientRenderErrorScriptArgInterstitial = stringToPrecomputedChunk(","), clientRenderScriptEnd = stringToPrecomputedChunk(")<\/script>");
 	stringToPrecomputedChunk("<template data-rxi=\"\" data-bid=\"");
 	stringToPrecomputedChunk("\" data-dgst=\"");
 	stringToPrecomputedChunk("\" data-msg=\"");
@@ -10839,12 +11060,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 			}
 		});
 	}
-	var lateStyleTagResourceOpen1 = stringToPrecomputedChunk(" media=\"not all\" data-precedence=\"");
-	var lateStyleTagResourceOpen2 = stringToPrecomputedChunk("\" data-href=\"");
-	var lateStyleTagResourceOpen3 = stringToPrecomputedChunk("\">");
-	var lateStyleTagTemplateClose = stringToPrecomputedChunk("</style>");
-	var currentlyRenderingBoundaryHasStylesToHoist = !1;
-	var destinationHasCapacity = !0;
+	var lateStyleTagResourceOpen1 = stringToPrecomputedChunk(" media=\"not all\" data-precedence=\""), lateStyleTagResourceOpen2 = stringToPrecomputedChunk("\" data-href=\""), lateStyleTagResourceOpen3 = stringToPrecomputedChunk("\">"), lateStyleTagTemplateClose = stringToPrecomputedChunk("</style>"), currentlyRenderingBoundaryHasStylesToHoist = !1, destinationHasCapacity = !0;
 	function flushStyleTagsLateForBoundary(styleQueue) {
 		var rules = styleQueue.rules, hrefs = styleQueue.hrefs, i = 0;
 		if (hrefs.length) {
@@ -10885,11 +11101,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 		stylesheetFlushingQueue.length = 0;
 		stylesheet.state = 2;
 	}
-	var styleTagResourceOpen1 = stringToPrecomputedChunk(" data-precedence=\"");
-	var styleTagResourceOpen2 = stringToPrecomputedChunk("\" data-href=\"");
-	var spaceSeparator = stringToPrecomputedChunk(" ");
-	var styleTagResourceOpen3 = stringToPrecomputedChunk("\">");
-	var styleTagResourceClose = stringToPrecomputedChunk("</style>");
+	var styleTagResourceOpen1 = stringToPrecomputedChunk(" data-precedence=\""), styleTagResourceOpen2 = stringToPrecomputedChunk("\" data-href=\""), spaceSeparator = stringToPrecomputedChunk(" "), styleTagResourceOpen3 = stringToPrecomputedChunk("\">"), styleTagResourceClose = stringToPrecomputedChunk("</style>");
 	function flushStylesInPreamble(styleQueue) {
 		var hasStylesheets = 0 < styleQueue.sheets.size;
 		styleQueue.sheets.forEach(flushStyleInPreamble, this);
@@ -10940,10 +11152,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 	function pushCompletedShellIdAttribute(target, resumableState) {
 		0 === (resumableState.instructions & 32) && (resumableState.instructions |= 32, target.push(completedShellIdAttributeStart, escapeTextForBrowser("_" + resumableState.idPrefix + "R_"), attributeEnd));
 	}
-	var arrayFirstOpenBracket = stringToPrecomputedChunk("[");
-	var arraySubsequentOpenBracket = stringToPrecomputedChunk(",[");
-	var arrayInterstitial = stringToPrecomputedChunk(",");
-	var arrayCloseBracket = stringToPrecomputedChunk("]");
+	var arrayFirstOpenBracket = stringToPrecomputedChunk("["), arraySubsequentOpenBracket = stringToPrecomputedChunk(",["), arrayInterstitial = stringToPrecomputedChunk(","), arrayCloseBracket = stringToPrecomputedChunk("]");
 	function writeStyleResourceDependenciesInJS(destination, hoistableState) {
 		writeChunk(destination, arrayFirstOpenBracket);
 		var nextArrayOpenBrackChunk = arrayFirstOpenBracket;
@@ -11256,9 +11465,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 	function hasSuspenseyContent(hoistableState) {
 		return 0 < hoistableState.stylesheets.size || hoistableState.suspenseyImages;
 	}
-	var bind = Function.prototype.bind;
-	var requestStorage = new async_hooks.AsyncLocalStorage();
-	var REACT_CLIENT_REFERENCE = Symbol.for("react.client.reference");
+	var bind = Function.prototype.bind, requestStorage = new async_hooks.AsyncLocalStorage(), REACT_CLIENT_REFERENCE = Symbol.for("react.client.reference");
 	function getComponentNameFromType(type) {
 		if (null == type) return null;
 		if ("function" === typeof type) return type.$$typeof === REACT_CLIENT_REFERENCE ? null : type.displayName || type.name || null;
@@ -11290,8 +11497,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 		}
 		return null;
 	}
-	var emptyContextObject = {};
-	var currentActiveSnapshot = null;
+	var emptyContextObject = {}, currentActiveSnapshot = null;
 	function popToNearestCommonAncestor(prev, next) {
 		if (prev !== next) {
 			prev.context._currentValue = prev.parentValue;
@@ -11343,8 +11549,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 			inst.queue = [payload];
 		},
 		enqueueForceUpdate: function() {}
-	};
-	var emptyTreeContext = {
+	}, emptyTreeContext = {
 		id: 1,
 		overflow: ""
 	};
@@ -11370,9 +11575,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 			overflow: baseContext
 		};
 	}
-	var clz32 = Math.clz32 ? Math.clz32 : clz32Fallback;
-	var log = Math.log;
-	var LN2 = Math.LN2;
+	var clz32 = Math.clz32 ? Math.clz32 : clz32Fallback, log = Math.log, LN2 = Math.LN2;
 	function clz32Fallback(x) {
 		x >>>= 0;
 		return 0 === x ? 32 : 31 - (log(x) / LN2 | 0) | 0;
@@ -11417,22 +11620,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 	function is(x, y) {
 		return x === y && (0 !== x || 1 / x === 1 / y) || x !== x && y !== y;
 	}
-	var objectIs = "function" === typeof Object.is ? Object.is : is;
-	var currentlyRenderingComponent = null;
-	var currentlyRenderingTask = null;
-	var currentlyRenderingRequest = null;
-	var currentlyRenderingKeyPath = null;
-	var firstWorkInProgressHook = null;
-	var workInProgressHook = null;
-	var isReRender = !1;
-	var didScheduleRenderPhaseUpdate = !1;
-	var localIdCounter = 0;
-	var actionStateCounter = 0;
-	var actionStateMatchingIndex = -1;
-	var thenableIndexCounter = 0;
-	var thenableState = null;
-	var renderPhaseUpdates = null;
-	var numberOfReRenders = 0;
+	var objectIs = "function" === typeof Object.is ? Object.is : is, currentlyRenderingComponent = null, currentlyRenderingTask = null, currentlyRenderingRequest = null, currentlyRenderingKeyPath = null, firstWorkInProgressHook = null, workInProgressHook = null, isReRender = !1, didScheduleRenderPhaseUpdate = !1, localIdCounter = 0, actionStateCounter = 0, actionStateMatchingIndex = -1, thenableIndexCounter = 0, thenableState = null, renderPhaseUpdates = null, numberOfReRenders = 0;
 	function resolveCurrentlyRenderingComponent() {
 		if (null === currentlyRenderingComponent) throw Error("Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more than one copy of React in the same app\nSee https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem.");
 		return currentlyRenderingComponent;
@@ -11670,9 +11858,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 		useEffectEvent: function() {
 			return throwOnUseEffectEventCall;
 		}
-	};
-	var currentResumableState = null;
-	var DefaultAsyncDispatcher = {
+	}, currentResumableState = null, DefaultAsyncDispatcher = {
 		getCacheForType: function() {
 			throw Error("Not implemented.");
 		},
@@ -11685,8 +11871,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 		for (var i = 0; i < structuredStackTrace.length; i++) error += "\n    at " + structuredStackTrace[i].toString();
 		return error;
 	}
-	var prefix;
-	var suffix;
+	var prefix, suffix;
 	function describeBuiltInComponentFrame(name) {
 		if (void 0 === prefix) try {
 			throw Error();
@@ -13182,7 +13367,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 	}
 	var flushingPartialBoundaries = !1;
 	function flushCompletedQueues(request, destination) {
-		currentView = /* @__PURE__ */ new Uint8Array(2048);
+		currentView = new Uint8Array(2048);
 		writtenBytes = 0;
 		destinationHasCapacity$1 = !0;
 		try {
@@ -13304,7 +13489,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 				}
 				completedBoundaries.splice(0, i);
 				completeWriting(destination);
-				currentView = /* @__PURE__ */ new Uint8Array(2048);
+				currentView = new Uint8Array(2048);
 				writtenBytes = 0;
 				flushingPartialBoundaries = destinationHasCapacity$1 = !0;
 				var partialBoundaries = request.partialBoundaries;
@@ -13447,7 +13632,7 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 	}
 	function ensureCorrectIsomorphicReactVersion() {
 		var isomorphicReactPackageVersion = React.version;
-		if ("19.2.8" !== isomorphicReactPackageVersion) throw Error("Incompatible React versions: The \"react\" and \"react-dom\" packages must have the exact same version. Instead got:\n  - react:      " + (isomorphicReactPackageVersion + "\n  - react-dom:  19.2.8\nLearn more: https://react.dev/warnings/version-mismatch"));
+		if ("19.2.5" !== isomorphicReactPackageVersion) throw Error("Incompatible React versions: The \"react\" and \"react-dom\" packages must have the exact same version. Instead got:\n  - react:      " + (isomorphicReactPackageVersion + "\n  - react-dom:  19.2.5\nLearn more: https://react.dev/warnings/version-mismatch"));
 	}
 	ensureCorrectIsomorphicReactVersion();
 	function createDrainHandler(destination, request) {
@@ -13759,13 +13944,12 @@ var require_react_dom_server_node_production = /* @__PURE__ */ __commonJSMin(((e
 			}
 		};
 	};
-	exports.version = "19.2.8";
+	exports.version = "19.2.5";
 }));
 //#endregion
 //#region node_modules/react-dom/server.node.js
 var require_server_node = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var l = require_react_dom_server_legacy_node_production();
-	var s = require_react_dom_server_node_production();
+	var l = require_react_dom_server_legacy_node_production(), s = require_react_dom_server_node_production();
 	exports.version = l.version;
 	exports.renderToString = l.renderToString;
 	exports.renderToStaticMarkup = l.renderToStaticMarkup;
@@ -13832,9 +14016,9 @@ var MIN_CLOSING_TAG_LENGTH = 4;
 var DEFAULT_SERIALIZATION_TIMEOUT_MS = 6e4;
 var DEFAULT_LIFETIME_TIMEOUT_MS = DEFAULT_SERIALIZATION_TIMEOUT_MS * 2;
 var MAX_LEFTOVER_CHARS = 2048;
-var MAX_TAIL_CHARS = 65536;
-var MAX_ROUTER_HTML_CHARS = 16777216;
-var MAX_PENDING_WRITE_CHARS = 16777216;
+var MAX_TAIL_CHARS = 64 * 1024;
+var MAX_ROUTER_HTML_CHARS = 16 * 1024 * 1024;
+var MAX_PENDING_WRITE_CHARS = 16 * 1024 * 1024;
 var MergeState = {
 	ReadingBody: 0,
 	HoldingTail: 1,
@@ -14397,7 +14581,7 @@ function makeMainStream(serverSsr, appStream, opts) {
 //#endregion
 //#region node_modules/isbot/index.mjs
 var import_server_node = /* @__PURE__ */ __toESM(require_server_node(), 1);
-var fullPattern = " daum[ /]| deusu/|(?:^|[^g])news(?!sapphire)|(?<! channel/|google/)google(?!(?:wv|app|/google| pixel))|(?<! cu)bots?(?:\\b|_)|(?<!cam)scan|(?<!lib)http|24x7|;\\s\\w+;$|@[a-z][\\w-]+\\.|\\(\\)|\\.com\\b|\\b\\w+\\.ai|\\bbw/|\\bdlc\\b|\\bort/|\\bperl\\b|\\btime/|\\||^[<\\(;]|^[\\w \\.\\-\\(?:\\):%]+(?:/v?\\d+(?:\\.\\d+)?(?:\\.\\d{1,10})*?)?(?:,|$)|^[\\w\\-]+/[\\w]+$|^[^ ]{50,}$|^\\d+\\b|^\\w*search\\b|^\\w+/[\\w\\(\\)]*$|^\\w+/\\d\\.\\d\\s\\([\\w@]+\\)$|^active|^ad muncher|^amaya|^apache/|^avsdevicesdk/|^azure|^biglotron|^blackbox exporter|^bot|^clamav[ /]|^claude-code/|^client/|^cobweb/|^custom|^ddg[_-]android|^discourse|^dispatch/\\d|^downcast/|^duckduckgo|^email|^exodusmovement|^facebook|^getright/|^gozilla/|^hobbit|^hotzonu|^hwcdn/|^igetter/|^jeode/|^jetty/|^jigsaw|^microsoft bits|^movabletype|^mozilla/\\d\\.\\d\\s[\\w\\.-]+$|^mozilla/\\d\\.\\d\\s\\((?:compatible;)?(?:\\s?[\\w\\d-.]+\\/\\d+\\.\\d+)?\\)$|^navermailapp|^netsurf|^offline|^openai/|^owler|^php|^postman|^ps_daily/|^python|^rank|^read|^reed|^remove\\.bg/|^rest|^rss|^snapchat|^sora |^space bison|^stape/|^svn|^swcd |^taringa|^thumbor/|^track|^w3c|^webbandit/|^webcopier|^wget|^whatsapp|^wordpress|^xenu link sleuth|^yahoo|^yandex|^zdm/\\d|^zoom marketplace/|abuse|advisor|agent\\b|analyzer|archive|ask jeeves/teoma|attracta|audit|bluecoat drtr|browsex|burpcollaborator|capture|catch|check\\b|checker|chrome-lighthouse|chromeframe|classifier|cloudflare|collapsify\\b|convertify|cookiehubverify/|crawl|cursor/|cypress/|dareboost|datanyze|dejaclick|detect|discovery|dmbrowser|download|exaleadcloudview|feed|fetcher|firephp|foregenix|functionize|grab|hardenize\\b|headless|hotjar|httrack|hubspot marketing grader|ibisbrowser|infrawatch|insight|inspect|iplabel|java(?!;)|library|linkcheck|linktiger|mail\\.ru/|manager|manus-user/|marketgoo/|measure|monitor\\b|neustar wpm|node\\b|nutch|offbyone|openvas|optimize|pageburst|pagespeed|parser|phantomjs|pingdom|playwright|powermarks|preview|productfinder|prospectingstudio|proxy|ptst[ /]\\d|radar|readable/|retriever|rexx;|rigor|rss\\b|scrape|securityheaders|selenium|server|silktide|sindup/|sogou|sparkler/|speedcurve|spider|splash|statuscake|supercleaner|synapse|synthetic|testlocally|tools|torrent|transcoder|upday/|url|validator|virtuoso|wappalyzer|watchtowr|webglance|webkit2png|whatcms/|xtate/";
+var fullPattern = " daum[ /]| deusu/|(?:^|[^g])news(?!sapphire)|(?<! (?:channel/|google/))google(?!(app|/google| pixel))|(?<! cu)bots?(?:\\b|_)|(?<!(?:lib))http|(?<!cam)scan|24x7|@[a-z][\\w-]+\\.|\\(\\)|\\.com\\b|\\b\\w+\\.ai|\\bcursor/|\\bmanus-user/|\\bort/|\\bperl\\b|\\bplaywright\\b|\\bsecurityheaders\\b|\\bselenium\\b|\\btime/|\\||^[\\w \\.\\-\\(?:\\):%]+(?:/v?\\d+(?:\\.\\d+)?(?:\\.\\d{1,10})*?)?(?:,|$)|^[\\w\\-]+/[\\w]+$|^[^ ]{50,}$|^\\d+\\b|^\\W|^\\w*search\\b|^\\w+/[\\w\\(\\)]*$|^\\w+/\\d\\.\\d\\s\\([\\w@]+\\)$|^active|^ad muncher|^amaya|^apache/|^avsdevicesdk/|^azure|^biglotron|^bot|^bw/|^clamav[ /]|^claude-code/|^client/|^cobweb/|^custom|^ddg[_-]android|^discourse|^dispatch/\\d|^downcast/|^duckduckgo|^email|^facebook|^getright/|^gozilla/|^hobbit|^hotzonu|^hwcdn/|^igetter/|^jeode/|^jetty/|^jigsaw|^microsoft bits|^movabletype|^mozilla/\\d\\.\\d\\s[\\w\\.-]+$|^mozilla/\\d\\.\\d\\s\\((?:compatible;)?(?:\\s?[\\w\\d-.]+\\/\\d+\\.\\d+)?\\)$|^navermailapp|^netsurf|^offline|^openai/|^owler|^php|^postman|^python|^rank|^read|^reed|^rest|^rss|^snapchat|^space bison|^svn|^swcd |^taringa|^thumbor/|^track|^w3c|^webbandit/|^webcopier|^wget|^whatsapp|^wordpress|^xenu link sleuth|^yahoo|^yandex|^zdm/\\d|^zoom marketplace/|advisor|agent\\b|analyzer|archive|ask jeeves/teoma|audit|bit\\.ly/|bluecoat drtr|browsex|burpcollaborator|capture|catch|check\\b|checker|chrome-lighthouse|chromeframe|classifier|cloudflare|convertify|crawl|cypress/|dareboost|datanyze|dejaclick|detect|dmbrowser|download|exaleadcloudview|feed|fetcher|firephp|functionize|grab|headless|httrack|hubspot marketing grader|ibisbrowser|infrawatch|insight|inspect|iplabel|java(?!;)|library|linkcheck|mail\\.ru/|manager|measure|monitor\\b|neustar wpm|node\\b|nutch|offbyone|onetrust|optimize|pageburst|pagespeed|parser|phantomjs|pingdom|powermarks|preview|proxy|ptst[ /]\\d|retriever|rexx;|rigor|rss\\b|scrape|server|sogou|sparkler/|speedcurve|spider|splash|statuscake|supercleaner|synapse|synthetic|tools|torrent|transcoder|url|validator|virtuoso|wappalyzer|webglance|webkit2png|whatcms/|xtate/";
 var naivePattern = /bot|crawl|http|lighthouse|scan|search|spider/i;
 var pattern;
 function getPattern() {
@@ -14410,10 +14594,9 @@ function getPattern() {
 	return pattern;
 }
 var isNonEmptyString = (value) => typeof value === "string" && value !== "";
-function isBot(userAgent) {
+function isbot(userAgent) {
 	return isNonEmptyString(userAgent) && getPattern().test(userAgent);
 }
-var isbot = isBot;
 //#endregion
 //#region node_modules/@tanstack/react-router/dist/esm/ssr/renderRouterToStream.js
 var noop = () => {};

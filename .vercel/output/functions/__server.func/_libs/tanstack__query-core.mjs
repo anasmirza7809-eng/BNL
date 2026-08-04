@@ -162,15 +162,7 @@ function hashKey(queryKey) {
 function partialMatchKey(a, b) {
 	if (a === b) return true;
 	if (typeof a !== typeof b) return false;
-	if (a && b && typeof a === "object" && typeof b === "object") {
-		if (Array.isArray(a) && Array.isArray(b)) {
-			for (let i = 0; i < b.length; i++) if (!partialMatchKey(a[i], b[i])) return false;
-			return true;
-		}
-		const bKeys = Object.keys(b);
-		for (const key of bKeys) if (!partialMatchKey(a[key], b[key])) return false;
-		return true;
-	}
+	if (a && b && typeof a === "object" && typeof b === "object") return Object.keys(b).every((key) => partialMatchKey(a[key], b[key]));
 	return false;
 }
 var hasOwn = Object.prototype.hasOwnProperty;
@@ -560,7 +552,7 @@ var Removable = class {
 		}, this.gcTime);
 	}
 	updateGcTime(newGcTime) {
-		this.gcTime = Math.max(this.gcTime || 0, newGcTime ?? (environmentManager.isServer() ? Infinity : 3e5));
+		this.gcTime = Math.max(this.gcTime || 0, newGcTime ?? (environmentManager.isServer() ? Infinity : 300 * 1e3));
 	}
 	clearGcTimeout() {
 		if (this.#gcTimeout !== void 0) {
@@ -602,8 +594,7 @@ function infiniteQueryBehavior(pages) {
 					addSignalProperty(queryFnContext2);
 					return queryFnContext2;
 				};
-				const queryFnContext = createQueryFnContext();
-				const page = await queryFn(queryFnContext);
+				const page = await queryFn(createQueryFnContext());
 				const { maxPages } = context.options;
 				const addTo = previous ? addToStart : addToEnd;
 				return {
@@ -1274,8 +1265,7 @@ var QueryObserver = class extends Subscribable {
 				else if (hasResultData) thenable.resolve(nextResult.data);
 			};
 			const recreateThenable = () => {
-				const pending = this.#currentThenable = nextResult.promise = pendingThenable();
-				finalizeThenableIfPossible(pending);
+				finalizeThenableIfPossible(this.#currentThenable = nextResult.promise = pendingThenable());
 			};
 			const prevThenable = this.#currentThenable;
 			switch (prevThenable.status) {
@@ -1285,7 +1275,9 @@ var QueryObserver = class extends Subscribable {
 				case "fulfilled":
 					if (isErrorWithoutData || nextResult.data !== prevThenable.value) recreateThenable();
 					break;
-				case "rejected": if (!isErrorWithoutData || nextResult.error !== prevThenable.reason) recreateThenable();
+				case "rejected":
+					if (!isErrorWithoutData || nextResult.error !== prevThenable.reason) recreateThenable();
+					break;
 			}
 		}
 		return nextResult;

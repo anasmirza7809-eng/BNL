@@ -10,6 +10,9 @@ function record(error) {
 if (typeof globalThis.addEventListener === "function") {
 	globalThis.addEventListener("error", (event) => record(event.error ?? event));
 	globalThis.addEventListener("unhandledrejection", (event) => record(event.reason));
+} else if (typeof process !== "undefined" && typeof process.on === "function") {
+	process.on("uncaughtException", (error) => record(error));
+	process.on("unhandledRejection", (reason) => record(reason));
 }
 function consumeLastCapturedError() {
 	if (!lastCapturedError) return void 0;
@@ -63,7 +66,7 @@ function renderErrorPage(error) {
 }
 var serverEntryPromise;
 async function getServerEntry() {
-	if (!serverEntryPromise) serverEntryPromise = import("./server-DAhzPYYF.mjs").then((n) => n.t).then((m) => m.default ?? m);
+	if (!serverEntryPromise) serverEntryPromise = import("./server-DpmYhxf6.mjs").then((m) => m.default ?? m);
 	return serverEntryPromise;
 }
 async function normalizeCatastrophicSsrResponse(response) {

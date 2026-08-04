@@ -2,7 +2,7 @@ import { t as createClient } from "../_libs/supabase__supabase-js.mjs";
 import { t as requireSupabaseAuth } from "./auth-middleware-F0vtjePk.mjs";
 import { a as objectType, i as numberType, n as booleanType, o as stringType } from "../_libs/zod.mjs";
 import { t as createServerRpc } from "./createServerRpc-MBa5GZ-L.mjs";
-import { a as createServerFn } from "./server-BRsgnlxe.mjs";
+import { a as createServerFn } from "./server-DAhzPYYF.mjs";
 //#region node_modules/.nitro/vite/services/ssr/assets/gallery.functions-iJ7elT0v.js
 var mockGallery = [{
 	id: "e9747eee-6cc2-42b4-9749-b5173614cd54",

@@ -139,8 +139,8 @@ var Route$12 = createFileRoute("/property/$id")({
 	component: lazyRouteComponent($$splitComponentImporter$11, "component")
 });
 //#endregion
-//#region node_modules/.nitro/vite/services/ssr/assets/router-LgY5_HiF.js
-var router_LgY5_HiF_exports = /* @__PURE__ */ __exportAll({ getRouter: () => getRouter });
+//#region node_modules/.nitro/vite/services/ssr/assets/router-2lZiNY0h.js
+var router_2lZiNY0h_exports = /* @__PURE__ */ __exportAll({ getRouter: () => getRouter });
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var styles_default = "/assets/styles-DEMA-bDz.css";
@@ -476,7 +476,7 @@ var Route$4 = createFileRoute("/contact")({
 	] }),
 	component: lazyRouteComponent($$splitComponentImporter$4, "component")
 });
-var $$splitComponentImporter$3 = () => import("./gallery-Cmuu51ut.mjs");
+var $$splitComponentImporter$3 = () => import("./gallery-Dx5c1v0U.mjs");
 var Route$3 = createFileRoute("/gallery")({
 	head: () => ({ meta: [
 		{ title: "Gallery — Bricks & Legacy" },
@@ -522,7 +522,7 @@ var Route$2 = createFileRoute("/services")({
 	] }),
 	component: lazyRouteComponent($$splitComponentImporter$2, "component")
 });
-var $$splitComponentImporter$1 = () => import("./admin-Lb-Fyrze.mjs");
+var $$splitComponentImporter$1 = () => import("./admin-DvaQkDMM.mjs");
 var Route$1 = createFileRoute("/_authenticated/admin")({
 	head: () => ({ meta: [{ title: "Admin — Bricks & Legacy" }, {
 		name: "robots",
@@ -647,4 +647,4 @@ var getRouter = () => {
 	});
 };
 //#endregion
-export { Route$13 as a, careersQuery as c, getRouter, CATEGORIES as i, Route$12 as n, isCategory as o, propertyQuery as r, propertiesQuery as s, router_LgY5_HiF_exports as t };
+export { Route$13 as a, careersQuery as c, getRouter, CATEGORIES as i, Route$12 as n, isCategory as o, propertyQuery as r, propertiesQuery as s, router_2lZiNY0h_exports as t };

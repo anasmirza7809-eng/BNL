@@ -5,7 +5,7 @@ import { t as Header } from "./header-Boyy3Tyj.mjs";
 import { t as Footer } from "./footer-DKq7yCTl.mjs";
 import { t as supabase } from "./client-Bx01nVAt.mjs";
 import { n as toast } from "../_libs/sonner.mjs";
-import { c as careersQuery } from "./router-LgY5_HiF.mjs";
+import { c as careersQuery } from "./router-2lZiNY0h.mjs";
 //#region node_modules/.nitro/vite/services/ssr/assets/careers-BJ9_4bTT.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();

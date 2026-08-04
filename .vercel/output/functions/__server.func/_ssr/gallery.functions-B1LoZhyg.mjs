@@ -3,7 +3,7 @@ import { c as require_react } from "../_libs/react+tanstack__react-query.mjs";
 import { k as isRedirect, y as useRouter } from "../_libs/@tanstack/react-router+[...].mjs";
 import { t as requireSupabaseAuth } from "./auth-middleware-F0vtjePk.mjs";
 import { a as objectType, i as numberType, n as booleanType, o as stringType } from "../_libs/zod.mjs";
-import { a as createServerFn, i as TSS_SERVER_FUNCTION, r as getServerFnById } from "./server-BRsgnlxe.mjs";
+import { a as createServerFn, i as TSS_SERVER_FUNCTION, n as getServerFnById } from "./server-DAhzPYYF.mjs";
 //#region node_modules/.nitro/vite/services/ssr/assets/gallery.functions-B1LoZhyg.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 function useServerFn(serverFn) {

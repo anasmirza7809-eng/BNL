@@ -6,7 +6,7 @@ import { t as Footer } from "./footer-DKq7yCTl.mjs";
 import { t as PropertyImage } from "./property-image-CPGMeRam.mjs";
 import { t as hero_dubai_default } from "./hero-dubai-B8guiSvw.mjs";
 import { t as cta_bg_default } from "./cta-bg-CIrHiDma.mjs";
-import { a as Route, i as CATEGORIES, o as isCategory, s as propertiesQuery } from "./router-LgY5_HiF.mjs";
+import { a as Route, i as CATEGORIES, o as isCategory, s as propertiesQuery } from "./router-2lZiNY0h.mjs";
 //#region node_modules/.nitro/vite/services/ssr/assets/properties._category-Pzo_sSuH.js
 var import_jsx_runtime = require_jsx_runtime();
 function CategoryPage() {

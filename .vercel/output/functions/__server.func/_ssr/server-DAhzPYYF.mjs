@@ -318,6 +318,34 @@ function serverFnBaseToMiddleware(options) {
 	};
 }
 //#endregion
+//#region node_modules/.nitro/vite/services/ssr/assets/createMiddleware-B_4t7rW1.js
+var createMiddleware = (options, __opts) => {
+	const resolvedOptions = {
+		type: "request",
+		...__opts || options
+	};
+	const setValidator = (validator) => {
+		return createMiddleware({}, Object.assign(resolvedOptions, {
+			validator,
+			inputValidator: validator
+		}));
+	};
+	return {
+		options: resolvedOptions,
+		middleware: (middleware) => {
+			return createMiddleware({}, Object.assign(resolvedOptions, { middleware }));
+		},
+		validator: setValidator,
+		inputValidator: setValidator,
+		client: (client) => {
+			return createMiddleware({}, Object.assign(resolvedOptions, { client }));
+		},
+		server: (server) => {
+			return createMiddleware({}, Object.assign(resolvedOptions, { server }));
+		}
+	};
+};
+//#endregion
 //#region node_modules/.nitro/vite/services/ssr/assets/__23tanstack-start-server-fn-resolver-gv43NO5t.js
 var manifest = {
 	"07720c655a1eda1cb3ae37d8e25474963c8e10a8de8b04ffd25f13c3c55f4046": {
@@ -379,36 +407,8 @@ async function getServerFnById(id, access) {
 	return action;
 }
 //#endregion
-//#region node_modules/.nitro/vite/services/ssr/assets/createMiddleware-B_4t7rW1.js
-var createMiddleware = (options, __opts) => {
-	const resolvedOptions = {
-		type: "request",
-		...__opts || options
-	};
-	const setValidator = (validator) => {
-		return createMiddleware({}, Object.assign(resolvedOptions, {
-			validator,
-			inputValidator: validator
-		}));
-	};
-	return {
-		options: resolvedOptions,
-		middleware: (middleware) => {
-			return createMiddleware({}, Object.assign(resolvedOptions, { middleware }));
-		},
-		validator: setValidator,
-		inputValidator: setValidator,
-		client: (client) => {
-			return createMiddleware({}, Object.assign(resolvedOptions, { client }));
-		},
-		server: (server) => {
-			return createMiddleware({}, Object.assign(resolvedOptions, { server }));
-		}
-	};
-};
-//#endregion
-//#region node_modules/.nitro/vite/services/ssr/assets/server-BRsgnlxe.js
-var server_BRsgnlxe_exports = /* @__PURE__ */ __exportAll({
+//#region node_modules/.nitro/vite/services/ssr/assets/server-DAhzPYYF.js
+var server_DAhzPYYF_exports = /* @__PURE__ */ __exportAll({
 	createServerEntry: () => createServerEntry,
 	default: () => server_default
 });
@@ -434,7 +434,7 @@ var HEADERS = { TSS_SHELL: "X-TSS_SHELL" };
 * the dev styles URL for route-scoped CSS collection.
 */
 async function getStartManifest(matchedRoutes) {
-	const { tsrStartManifest } = await import("../_tanstack-start-manifest_v-Dot3-2ln.mjs");
+	const { tsrStartManifest } = await import("../_tanstack-start-manifest_v-1Ja10HqL.mjs");
 	const startManifest = tsrStartManifest();
 	let routes = startManifest.routes;
 	routes[rootRouteId];
@@ -1430,7 +1430,7 @@ var getBaseManifest = getProdBaseManifest;
 var createEarlyHintsForRequest = createEarlyHintsCollector;
 async function loadEntries() {
 	const [routerEntry, startEntry, pluginAdapters] = await Promise.all([
-		import("./router-LgY5_HiF.mjs").then((n) => n.t),
+		import("./router-2lZiNY0h.mjs").then((n) => n.t),
 		import("./start-C8UT4NOx.mjs"),
 		import("./empty-plugin-adapters-D9UWiqvJ.mjs")
 	]);
@@ -1815,4 +1815,4 @@ function createServerEntry(entry) {
 }
 var server_default = createServerEntry({ fetch });
 //#endregion
-export { createServerFn as a, createServerEntry, server_default as default, TSS_SERVER_FUNCTION as i, createMiddleware as n, getRequest as o, getServerFnById as r, server_BRsgnlxe_exports as t };
+export { createServerFn as a, createServerEntry, server_default as default, TSS_SERVER_FUNCTION as i, getServerFnById as n, getRequest as o, createMiddleware as r, server_DAhzPYYF_exports as t };

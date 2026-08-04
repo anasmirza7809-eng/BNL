@@ -11,7 +11,7 @@ import { n as india_commercial_jpg_asset_default, r as india_land_default, t as 
 import { t as dubai_rental_default } from "./dubai-rental-CCvlqigc.mjs";
 import { t as hero_dubai_default } from "./hero-dubai-B8guiSvw.mjs";
 import { n as ChevronLeft, t as ChevronRight } from "../_libs/lucide-react.mjs";
-import { n as Route, r as propertyQuery } from "./router-LgY5_HiF.mjs";
+import { n as Route, r as propertyQuery } from "./router-2lZiNY0h.mjs";
 //#region node_modules/.nitro/vite/services/ssr/assets/property._id-D7jAhLg7.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();

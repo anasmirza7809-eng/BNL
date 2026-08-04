@@ -1,4 +1,4 @@
-//#region node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-Dot3-2ln.js
+//#region node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-1Ja10HqL.js
 var tsrStartManifest = () => ({ routes: {
 	__root__: {
 		filePath: "C:/Users/DK/Downloads/BNL website/BNL website/src/routes/__root.tsx",
@@ -17,7 +17,7 @@ var tsrStartManifest = () => ({ routes: {
 			"/properties/"
 		],
 		preloads: [
-			"/assets/index-DNsq9hCl.js",
+			"/assets/index-OZR_ZBUN.js",
 			"/assets/jsx-runtime-BkSabwWG.js",
 			"/assets/useStore-DqH-xEWJ.js",
 			"/assets/link-CqoGk6KF.js",
@@ -28,17 +28,17 @@ var tsrStartManifest = () => ({ routes: {
 		scripts: [{ attrs: {
 			type: "module",
 			async: !0,
-			src: "/assets/index-DNsq9hCl.js"
+			src: "/assets/index-OZR_ZBUN.js"
 		} }]
 	},
 	"/": {
 		filePath: "C:/Users/DK/Downloads/BNL website/BNL website/src/routes/index.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/routes-CldBKHXj.js",
-			"/assets/header-CIA5iN1e.js",
+			"/assets/routes-Dc3hd2M_.js",
+			"/assets/header-DIXvxbnS.js",
 			"/assets/tilt-card-ypHxrMOr.js",
-			"/assets/footer-BkjD7KjO.js",
+			"/assets/footer-CcXdjCna.js",
 			"/assets/hero-dubai-CBbQXacD.js",
 			"/assets/dubai-commercial.jpg.asset-KbfVDVHH.js"
 		]
@@ -46,70 +46,70 @@ var tsrStartManifest = () => ({ routes: {
 	"/_authenticated": {
 		filePath: "C:/Users/DK/Downloads/BNL website/BNL website/src/routes/_authenticated/route.tsx",
 		children: ["/_authenticated/admin"],
-		preloads: ["/assets/route-BX1euP0X.js"]
+		preloads: ["/assets/route-BtmXNx7H.js"]
 	},
 	"/about-us": {
 		filePath: "C:/Users/DK/Downloads/BNL website/BNL website/src/routes/about-us.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/about-us-C59IbT18.js",
-			"/assets/header-CIA5iN1e.js",
+			"/assets/about-us-Ctu1xeoH.js",
+			"/assets/header-DIXvxbnS.js",
 			"/assets/tilt-card-ypHxrMOr.js",
-			"/assets/footer-BkjD7KjO.js"
+			"/assets/footer-CcXdjCna.js"
 		]
 	},
 	"/auth": {
 		filePath: "C:/Users/DK/Downloads/BNL website/BNL website/src/routes/auth.tsx",
 		children: void 0,
-		preloads: ["/assets/auth-DrpXx781.js", "/assets/bnl-logo.asset-Cbh4mApq.js"]
+		preloads: ["/assets/auth-CKjDvxtl.js", "/assets/bnl-logo.asset-Cbh4mApq.js"]
 	},
 	"/blogs": {
 		filePath: "C:/Users/DK/Downloads/BNL website/BNL website/src/routes/blogs.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/blogs-ChpzXEdV.js",
-			"/assets/header-CIA5iN1e.js",
+			"/assets/blogs-5MPpkZhw.js",
+			"/assets/header-DIXvxbnS.js",
 			"/assets/tilt-card-ypHxrMOr.js",
-			"/assets/footer-BkjD7KjO.js"
+			"/assets/footer-CcXdjCna.js"
 		]
 	},
 	"/careers": {
 		filePath: "C:/Users/DK/Downloads/BNL website/BNL website/src/routes/careers.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/careers-A2jb-oCI.js",
-			"/assets/header-CIA5iN1e.js",
-			"/assets/useSuspenseQuery-CKVMZ_hB.js",
+			"/assets/careers-BZvSIvA4.js",
+			"/assets/useSuspenseQuery-B0LFDTPj.js",
+			"/assets/header-DIXvxbnS.js",
 			"/assets/tilt-card-ypHxrMOr.js",
-			"/assets/footer-BkjD7KjO.js"
+			"/assets/footer-CcXdjCna.js"
 		]
 	},
 	"/contact": {
 		filePath: "C:/Users/DK/Downloads/BNL website/BNL website/src/routes/contact.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/contact-DW0ufKVm.js",
-			"/assets/header-CIA5iN1e.js",
-			"/assets/footer-BkjD7KjO.js"
+			"/assets/contact-DbsbH7rT.js",
+			"/assets/header-DIXvxbnS.js",
+			"/assets/footer-CcXdjCna.js"
 		]
 	},
 	"/gallery": {
 		filePath: "C:/Users/DK/Downloads/BNL website/BNL website/src/routes/gallery.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/gallery-Dz-IXQgg.js",
-			"/assets/gallery.functions-hhjDkHBw.js",
-			"/assets/header-CIA5iN1e.js"
+			"/assets/gallery-Dd3bELzF.js",
+			"/assets/gallery.functions-CyyDcmf_.js",
+			"/assets/header-DIXvxbnS.js"
 		]
 	},
 	"/services": {
 		filePath: "C:/Users/DK/Downloads/BNL website/BNL website/src/routes/services.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/services-CvbeuSDD.js",
-			"/assets/header-CIA5iN1e.js",
+			"/assets/services-fZx8Jz_F.js",
+			"/assets/header-DIXvxbnS.js",
 			"/assets/tilt-card-ypHxrMOr.js",
-			"/assets/footer-BkjD7KjO.js",
+			"/assets/footer-CcXdjCna.js",
 			"/assets/cta-bg-CDQgq_3F.js"
 		]
 	},
@@ -117,39 +117,39 @@ var tsrStartManifest = () => ({ routes: {
 		filePath: "C:/Users/DK/Downloads/BNL website/BNL website/src/routes/_authenticated/admin.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/admin-Cb2YIH0y.js",
-			"/assets/gallery.functions-hhjDkHBw.js",
+			"/assets/admin-Cnrmt7_s.js",
+			"/assets/gallery.functions-CyyDcmf_.js",
 			"/assets/bnl-logo.asset-Cbh4mApq.js",
-			"/assets/property-image-D1ugjvih.js"
+			"/assets/property-image-DGKJoHHd.js"
 		]
 	},
 	"/properties/$category": {
 		filePath: "C:/Users/DK/Downloads/BNL website/BNL website/src/routes/properties.$category.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/properties._category-BZIdqDMi.js",
-			"/assets/header-CIA5iN1e.js",
-			"/assets/useSuspenseQuery-CKVMZ_hB.js",
-			"/assets/tilt-card-ypHxrMOr.js",
-			"/assets/property-image-D1ugjvih.js",
-			"/assets/footer-BkjD7KjO.js",
-			"/assets/hero-dubai-CBbQXacD.js",
-			"/assets/cta-bg-CDQgq_3F.js",
 			"/assets/properties._category-COVEgI7C.js",
-			"/assets/properties._category-DemdW4je.js"
+			"/assets/properties._category-DemdW4je.js",
+			"/assets/properties._category-xdqjsV1w.js",
+			"/assets/useSuspenseQuery-B0LFDTPj.js",
+			"/assets/header-DIXvxbnS.js",
+			"/assets/tilt-card-ypHxrMOr.js",
+			"/assets/property-image-DGKJoHHd.js",
+			"/assets/footer-CcXdjCna.js",
+			"/assets/hero-dubai-CBbQXacD.js",
+			"/assets/cta-bg-CDQgq_3F.js"
 		]
 	},
 	"/property/$id": {
 		filePath: "C:/Users/DK/Downloads/BNL website/BNL website/src/routes/property.$id.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/property._id-COVEgI7C.js",
-			"/assets/property._id-ljfhMzyl.js",
-			"/assets/header-CIA5iN1e.js",
-			"/assets/useSuspenseQuery-CKVMZ_hB.js",
-			"/assets/property-image-D1ugjvih.js",
-			"/assets/footer-BkjD7KjO.js",
+			"/assets/property._id-BFGOjRmF.js",
+			"/assets/useSuspenseQuery-B0LFDTPj.js",
+			"/assets/header-DIXvxbnS.js",
+			"/assets/property-image-DGKJoHHd.js",
+			"/assets/footer-CcXdjCna.js",
 			"/assets/hero-dubai-CBbQXacD.js",
+			"/assets/property._id-COVEgI7C.js",
 			"/assets/property._id-wfG-Tjjh.js"
 		]
 	},
@@ -157,10 +157,10 @@ var tsrStartManifest = () => ({ routes: {
 		filePath: "C:/Users/DK/Downloads/BNL website/BNL website/src/routes/properties.index.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/properties.index-LFn7PU0x.js",
-			"/assets/header-CIA5iN1e.js",
+			"/assets/properties.index-Dr0r2XX6.js",
+			"/assets/header-DIXvxbnS.js",
 			"/assets/tilt-card-ypHxrMOr.js",
-			"/assets/footer-BkjD7KjO.js",
+			"/assets/footer-CcXdjCna.js",
 			"/assets/dubai-commercial.jpg.asset-KbfVDVHH.js",
 			"/assets/cta-bg-CDQgq_3F.js"
 		]

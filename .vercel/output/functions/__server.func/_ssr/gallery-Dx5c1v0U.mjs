@@ -1,9 +1,9 @@
 import { i as __toESM } from "../_runtime.mjs";
 import { c as require_react, i as useQuery, s as require_jsx_runtime } from "../_libs/react+tanstack__react-query.mjs";
 import { t as Header } from "./header-Boyy3Tyj.mjs";
-import { i as listPublicGallery, o as useServerFn } from "./gallery.functions-B1LoZhyg.mjs";
 import { t as supabase } from "./client-Bx01nVAt.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/gallery-Cmuu51ut.js
+import { i as listPublicGallery, o as useServerFn } from "./gallery.functions-B1LoZhyg.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/gallery-Dx5c1v0U.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var hero_gallery_default = "/assets/hero-gallery-GtBUZw-2.jpg";

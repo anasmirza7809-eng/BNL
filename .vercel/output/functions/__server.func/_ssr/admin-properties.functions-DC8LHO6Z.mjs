@@ -1,7 +1,7 @@
 import { t as requireSupabaseAuth } from "./auth-middleware-F0vtjePk.mjs";
 import { a as objectType, n as booleanType, o as stringType, r as enumType, t as arrayType } from "../_libs/zod.mjs";
 import { t as createServerRpc } from "./createServerRpc-MBa5GZ-L.mjs";
-import { a as createServerFn } from "./server-BRsgnlxe.mjs";
+import { a as createServerFn } from "./server-DAhzPYYF.mjs";
 //#region node_modules/.nitro/vite/services/ssr/assets/admin-properties.functions-DC8LHO6Z.js
 var propertyInput = objectType({
 	id: stringType().uuid().optional().nullable(),

@@ -1,0 +1,14 @@
+//#region node_modules/.nitro/vite/services/ssr/assets/india-residential.jpg.asset-ptUwFqSh.js
+var india_residential_jpg_asset_default = {
+	version: 1,
+	asset_id: "4e7a4a65-210d-4521-9f1c-73a09d7ecd18",
+	project_id: "69f98387-551c-4301-9e08-a8b384c5d4e2",
+	url: "/__l5e/assets-v1/4e7a4a65-210d-4521-9f1c-73a09d7ecd18/india-residential.jpg",
+	r2_key: "a/v1/69f98387-551c-4301-9e08-a8b384c5d4e2/4e7a4a65-210d-4521-9f1c-73a09d7ecd18/india-residential.jpg",
+	original_filename: "india-residential.jpg",
+	size: 511830,
+	content_type: "image/jpeg",
+	created_at: "2026-07-28T09:47:57Z"
+};
+//#endregion
+export { india_residential_jpg_asset_default as t };

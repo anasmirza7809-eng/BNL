@@ -1,0 +1,14 @@
+//#region node_modules/.nitro/vite/services/ssr/assets/bnl-logo.asset-CplchhA0.js
+var bnl_logo_asset_default = {
+	version: 1,
+	asset_id: "07c730c3-23f9-4655-a367-ac01c0806625",
+	project_id: "69f98387-551c-4301-9e08-a8b384c5d4e2",
+	url: "/__l5e/assets-v1/07c730c3-23f9-4655-a367-ac01c0806625/bnl-logo.png",
+	r2_key: "a/v1/69f98387-551c-4301-9e08-a8b384c5d4e2/07c730c3-23f9-4655-a367-ac01c0806625/bnl-logo.png",
+	original_filename: "bnl-logo.png",
+	size: 49349,
+	content_type: "image/png",
+	created_at: "2026-07-16T17:04:16Z"
+};
+//#endregion
+export { bnl_logo_asset_default as t };

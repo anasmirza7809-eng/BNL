@@ -1,9 +1,8 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { usePropertyImageSrc } from "@/lib/property-image";
+import { getLocalPropertyById } from "@/lib/local-property-data";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import heroDubai from "@/assets/hero-dubai.jpg";
@@ -51,25 +50,12 @@ type Property = {
   published: boolean;
 };
 
-const propertyQuery = (id: string) =>
-  queryOptions({
-    queryKey: ["property", id],
-    queryFn: async (): Promise<Property> => {
-      const { data, error } = await supabase
-        .from("properties")
-        .select("*")
-        .eq("id", id)
-        .eq("published", true)
-        .maybeSingle();
-      if (error) throw error;
-      if (!data) throw notFound();
-      return data as unknown as Property;
-    },
-  });
-
 export const Route = createFileRoute("/property/$id")({
-  loader: ({ params, context }) =>
-    context.queryClient.ensureQueryData(propertyQuery(params.id)),
+  loader: ({ params }) => {
+    const property = getLocalPropertyById(params.id);
+    if (!property) throw notFound();
+    return property;
+  },
   head: ({ loaderData }) => {
     const p = loaderData as Property | undefined;
     const title = p ? `${p.title} — Bricks & Legacy` : "Property — Bricks & Legacy";
@@ -106,36 +92,16 @@ export const Route = createFileRoute("/property/$id")({
   ),
   component: PropertyPage,
 });
-
 function useGalleryUrls(paths: string[]): string[] {
-  const [urls, setUrls] = useState<string[]>([]);
-  useEffect(() => {
-    let cancelled = false;
-    if (!paths.length) {
-      setUrls([]);
-      return;
-    }
-    Promise.all(
-      paths.map((path) =>
-        path.startsWith("http")
-          ? Promise.resolve(path)
-          : supabase.storage
-              .from("property-images")
-              .createSignedUrl(path, 60 * 60 * 24)
-              .then(({ data }) => data?.signedUrl ?? ""),
-      ),
-    ).then((r) => {
-      if (!cancelled) setUrls(r.filter(Boolean));
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [paths.join("|")]);
-  return urls;
+  return paths.map((path) => {
+    if (path.startsWith("http") || path.startsWith("/")) return path;
+    return `/${path}`;
+  });
 }
 
+
 function PropertyPage() {
-  const { data: p } = useSuspenseQuery(propertyQuery(Route.useParams().id));
+  const p = Route.useLoaderData() as Property;
   const fallback = FALLBACKS[p.category] ?? dubaiApartment;
   const cat = CATEGORY_LABEL[p.category] ?? { label: "Property", region: "" };
   const heroSrc = usePropertyImageSrc(p.image_path, p.image_url, fallback, p.gallery);

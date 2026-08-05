@@ -1,4 +1,4 @@
-import { createServerFn } from "@tanstack/start-client-core";
+import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
@@ -29,73 +29,7 @@ const propertyInput = z.object({
   published: z.boolean(),
 });
 
-let mockProperties: any[] = [
-  {
-    id: "d9747eee-6cc2-42b4-9749-b5173614cd54",
-    category: "dubai-apartments",
-    title: "Marina View Residences",
-    location: "Dubai Marina",
-    price: "AED 2.4M",
-    bedrooms: "2 BR",
-    area: "1,250 sqft",
-    description: "Panoramic marina views with premium finishes and resort-style amenities.",
-    full_description: "Enjoy luxurious living in the heart of Dubai Marina. This stunning 2-bedroom apartment offers breathtaking panoramic views of the water, a state-of-the-art kitchen with integrated appliances, and a spacious balcony perfect for entertaining. Residents gain exclusive access to a temperature-controlled infinity pool, modern gym, and 24/7 concierge services.",
-    image_url: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop&q=80",
-    image_path: null,
-    gallery: [
-      "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&auto=format&fit=crop&q=80"
-    ],
-    highlights: ["Panoramic Marina Views", "Infinity Pool Access", "24/7 Concierge", "Integrated Kitchen Appliances"],
-    featured: true,
-    published: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: "f57c7b3b-2ef8-48db-88c7-d8cf71b349be",
-    category: "dubai-commercial",
-    title: "Business Bay Tower Floor",
-    location: "Business Bay",
-    price: "AED 6.2M",
-    bedrooms: null,
-    area: "4,500 sqft",
-    description: "Full-floor Grade-A office with skyline views and secure parking.",
-    full_description: "A premium full-floor commercial space located in the bustling business district of Business Bay. Fully fitted with partitions, executive offices, meeting rooms, and open workstations. Offers panoramic canal and Burj Khalifa views, dedicated server room, private pantry, and 8 secure parking bays.",
-    image_url: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&auto=format&fit=crop&q=80",
-    image_path: null,
-    gallery: ["https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&auto=format&fit=crop&q=80"],
-    highlights: ["Burj Khalifa Views", "Grade-A Fitting", "8 Parking Spaces", "Canal Frontage"],
-    featured: false,
-    published: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: "97bb159b-0de3-44b6-bbfb-21738772351b",
-    category: "india-land",
-    title: "Alibaug Sea-Facing Plot",
-    location: "Alibaug, Maharashtra",
-    price: "₹ 3.2 Cr",
-    bedrooms: null,
-    area: "12,000 sqft",
-    description: "Titled sea-view plot ideal for a private villa or boutique retreat.",
-    full_description: "A pristine 12,000 sqft sea-facing plot in Alibaug, the premium getaway destination. Clear title, demarcated boundary wall, and fully sanctioned for a luxurious second home. Boasts mature coconut groves and direct road access.",
-    image_url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80",
-    image_path: null,
-    gallery: ["https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80"],
-    highlights: ["Clear Sea Views", "Demarcated Boundary", "Second Home Sanctions", "Mature Coconut Groves"],
-    featured: true,
-    published: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  }
-];
-
-const isMock = !process.env.SUPABASE_URL;
-
 async function assertAdmin(context: { supabase: any; userId: string }) {
-  if (isMock) return;
   const { data, error } = await context.supabase.rpc("has_role", {
     _user_id: context.userId,
     _role: "admin",
@@ -108,7 +42,6 @@ export const listAdminProperties = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context);
-    if (isMock) return mockProperties;
     const { data, error } = await context.supabase
       .from("properties")
       .select("*")
@@ -124,7 +57,6 @@ export const upsertProperty = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const payload = {
-      id: data.id || crypto.randomUUID(),
       category: data.category,
       title: data.title,
       location: data.location || null,
@@ -139,18 +71,7 @@ export const upsertProperty = createServerFn({ method: "POST" })
       highlights: data.highlights ?? [],
       featured: data.featured,
       published: data.published,
-      updated_at: new Date().toISOString(),
     };
-
-    if (isMock) {
-      if (data.id) {
-        mockProperties = mockProperties.map((p) => (p.id === data.id ? { ...p, ...payload } : p));
-      } else {
-        const newProp = { ...payload, created_at: new Date().toISOString() };
-        mockProperties.push(newProp);
-      }
-      return { id: payload.id };
-    }
 
     if (data.id) {
       const { error } = await context.supabase
@@ -175,10 +96,6 @@ export const deleteProperty = createServerFn({ method: "POST" })
   .validator((raw) => z.object({ id: z.string().uuid() }).parse(raw))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    if (isMock) {
-      mockProperties = mockProperties.filter((p) => p.id !== data.id);
-      return { ok: true as const };
-    }
     const { data: existing } = await context.supabase
       .from("properties")
       .select("image_path, gallery")

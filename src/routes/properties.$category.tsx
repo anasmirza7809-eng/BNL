@@ -1,10 +1,9 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { TiltCard } from "@/components/tilt-card";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { PropertyImage } from "@/lib/property-image";
+import { getLocalPropertiesByCategory } from "@/lib/local-property-data";
 import heroDubai from "@/assets/hero-dubai.jpg";
 import dubaiApartment from "@/assets/dubai-apartment.jpg.asset.json";
 import indiaResidential from "@/assets/india-residential.jpg.asset.json";
@@ -67,26 +66,9 @@ const CATEGORIES: Record<
 
 const isCategory = (s: string): s is CategorySlug => s in CATEGORIES;
 
-const propertiesQuery = (category: CategorySlug) =>
-  queryOptions({
-    queryKey: ["properties", category],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("properties")
-        .select("*")
-        .eq("category", category)
-        .eq("published", true)
-        .order("featured", { ascending: false })
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-  });
-
 export const Route = createFileRoute("/properties/$category")({
-  loader: async ({ params, context }) => {
+  loader: async ({ params }) => {
     if (!isCategory(params.category)) throw notFound();
-    await context.queryClient.ensureQueryData(propertiesQuery(params.category));
   },
   head: ({ params }) => {
     const meta = isCategory(params.category) ? CATEGORIES[params.category] : null;
@@ -127,7 +109,7 @@ function CategoryPage() {
   const { category } = Route.useParams();
   if (!isCategory(category)) return null;
   const meta = CATEGORIES[category];
-  const { data: properties } = useSuspenseQuery(propertiesQuery(category));
+  const properties = getLocalPropertiesByCategory(category);
 
   return (
     <main className="bg-background text-foreground">

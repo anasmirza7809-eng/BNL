@@ -1453,24 +1453,7 @@ function GalleryAdminTile({
   onTogglePublish: () => void;
   onDelete: () => void;
 }) {
-  const [signed, setSigned] = useState<string | null>(null);
-  useEffect(() => {
-    let cancelled = false;
-    if (!row.image_path) {
-      setSigned(null);
-      return;
-    }
-    supabase.storage
-      .from("gallery-images")
-      .createSignedUrl(row.image_path, 60 * 60)
-      .then(({ data }) => {
-        if (!cancelled && data?.signedUrl) setSigned(data.signedUrl);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [row.image_path]);
-  const src = row.image_path ? signed : row.image_url;
+
   return (
     <div className="overflow-hidden rounded-sm bg-card shadow-[0_10px_30px_-20px_rgba(0,0,0,0.15)]">
       <div className="aspect-[4/3] bg-primary/5">

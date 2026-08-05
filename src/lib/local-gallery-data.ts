@@ -1,0 +1,140 @@
+type GalleryRow = {
+  id: string;
+  title: string | null;
+  caption: string | null;
+  image_url: string | null;
+  image_path: string | null;
+  sort_order: number;
+};
+
+// Local gallery data using images from public/properties directory
+export const localGalleryData: GalleryRow[] = [
+  {
+    id: "1",
+    title: "Luxury Living Space",
+    caption: "Modern apartment with stunning city views",
+    image_url: "/properties/04b60530-e2e3-4acc-8e7a-e7aae205a894.jpeg",
+    image_path: null,
+    sort_order: 1,
+  },
+  {
+    id: "2",
+    title: "Premium Villa",
+    caption: "Exclusive villa with private pool and garden",
+    image_url: "/properties/247dcba4-8eee-45cc-a554-45b4dc8cbe97.jpeg",
+    image_path: null,
+    sort_order: 2,
+  },
+  {
+    id: "3",
+    title: "Dubai Skyline View",
+    caption: "Breathtaking views of the Dubai skyline",
+    image_url: "/properties/46b5e61c-66b1-4245-8389-f87ef2d425ce.jpeg",
+    image_path: null,
+    sort_order: 3,
+  },
+  {
+    id: "4",
+    title: "Modern Interior",
+    caption: "Contemporary design with premium finishes",
+    image_url: "/properties/4a5b54f3-bb52-492e-a980-397ba80aeb8a.jpeg",
+    image_path: null,
+    sort_order: 4,
+  },
+  {
+    id: "5",
+    title: "Commercial Space",
+    caption: "High-end office space in prime location",
+    image_url: "/properties/532a7c19-3ccb-4adf-889b-7f9560654104.jpeg",
+    image_path: null,
+    sort_order: 5,
+  },
+  {
+    id: "6",
+    title: "Residential Complex",
+    caption: "Luxury residential complex with amenities",
+    image_url: "/properties/68963928-32c8-43aa-b39c-6ca9782d7976.jpeg",
+    image_path: null,
+    sort_order: 6,
+  },
+  {
+    id: "7",
+    title: "Poolside Living",
+    caption: "Resort-style amenities for luxurious living",
+    image_url: "/properties/75e55b68-948d-4330-878d-1d13097e1e0f.jpeg",
+    image_path: null,
+    sort_order: 7,
+  },
+  {
+    id: "8",
+    title: "Penthouse Suite",
+    caption: "Exclusive penthouse with panoramic views",
+    image_url: "/properties/7a15fc0c-efc7-4d1b-84f1-228af0661205.jpeg",
+    image_path: null,
+    sort_order: 8,
+  },
+  {
+    id: "9",
+    title: "Garden Villa",
+    caption: "Spacious villa with landscaped gardens",
+    image_url: "/properties/9acdd4b3-1e29-4f30-ab81-1ecbb961c2d4.jpeg",
+    image_path: null,
+    sort_order: 9,
+  },
+  {
+    id: "10",
+    title: "Beachfront Property",
+    caption: "Stunning beachfront luxury residence",
+    image_url: "/properties/ad5589f0-e6d7-4344-839b-6a21f79e7689.jpeg",
+    image_path: null,
+    sort_order: 10,
+  },
+  {
+    id: "11",
+    title: "Urban Living",
+    caption: "Modern urban apartment in city center",
+    image_url: "/properties/b7b445c1-73a7-45ad-8e48-35706c517a76.jpeg",
+    image_path: null,
+    sort_order: 11,
+  },
+  {
+    id: "12",
+    title: "Skyline Apartment",
+    caption: "High-rise apartment with city views",
+    image_url: "/properties/c56df1b8-6dc1-4470-b317-d39791bfdc70.jpeg",
+    image_path: null,
+    sort_order: 12,
+  },
+  {
+    id: "13",
+    title: "Luxury Townhouse",
+    caption: "Premium townhouse in exclusive community",
+    image_url: "/properties/cc9e9fe6-b1f4-4462-9404-14475311b730.jpeg",
+    image_path: null,
+    sort_order: 13,
+  },
+  {
+    id: "14",
+    title: "Modern Architecture",
+    caption: "Contemporary architectural masterpiece",
+    image_url: "/properties/e4eb1f85-0298-4b6c-bacd-bd817915d010.jpeg",
+    image_path: null,
+    sort_order: 14,
+  },
+  {
+    id: "15",
+    title: "Waterfront Living",
+    caption: "Exclusive waterfront property",
+    image_url: "/properties/e5a3a92e-4cfb-4dda-bb65-06d36af916fd.jpeg",
+    image_path: null,
+    sort_order: 15,
+  },
+  {
+    id: "16",
+    title: "Grand Estate",
+    caption: "Luxurious estate with extensive grounds",
+    image_url: "/properties/f95b3ed7-3456-4be8-a572-1760a15c2152.jpeg",
+    image_path: null,
+    sort_order: 16,
+  },
+];

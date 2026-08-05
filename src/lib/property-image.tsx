@@ -15,26 +15,11 @@ export function usePropertyImageSrc(
   const galleryPath = gallery && gallery.length > 0 ? gallery[0] : null;
   const target =
     imagePath || (galleryPath && !galleryPath.startsWith("http") ? galleryPath : null);
-  const [signed, setSigned] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    if (!target) {
-      setSigned(null);
-      return;
-    }
-    supabase.storage
-      .from("property-images")
-      .createSignedUrl(target, 60 * 60 * 24)
-      .then(({ data }) => {
-        if (!cancelled && data?.signedUrl) setSigned(data.signedUrl);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [target]);
-
-  if (target && signed) return signed;
+  if (target) {
+    if (target.startsWith("http") || target.startsWith("/")) return target;
+    return `/${target}`;
+  }
   // Prefer an uploaded gallery photo over a legacy/stock image_url
   if (galleryPath && galleryPath.startsWith("http")) return galleryPath;
   if (imageUrl) return imageUrl;

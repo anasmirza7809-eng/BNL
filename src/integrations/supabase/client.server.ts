@@ -34,32 +34,13 @@ function createSupabaseAdminClient() {
   const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    console.warn("[Supabase] Missing server environment variables. Returning mock admin client for preview bypass.");
-    const mockPostgrest: any = {
-      select: () => mockPostgrest,
-      eq: () => mockPostgrest,
-      neq: () => mockPostgrest,
-      gt: () => mockPostgrest,
-      lt: () => mockPostgrest,
-      order: () => mockPostgrest,
-      limit: () => mockPostgrest,
-      single: () => Promise.resolve({ data: null, error: null }),
-      maybeSingle: () => Promise.resolve({ data: null, error: null }),
-      then: (onfulfilled: any) => Promise.resolve({ data: [], error: null }).then(onfulfilled),
-    };
-    return {
-      auth: {
-        getUser: async () => ({ data: { user: { id: "mock-user-id", email: "admin@example.com" } }, error: null }),
-      },
-      from: () => mockPostgrest,
-      storage: {
-        from: () => ({
-          createSignedUrl: async (path: string) => ({ data: { signedUrl: path }, error: null }),
-          upload: async () => ({ data: { path: "mock-path" }, error: null }),
-          remove: async () => ({ error: null }),
-        }),
-      },
-    } as any;
+    const missing = [
+      ...(!SUPABASE_URL ? ['SUPABASE_URL'] : []),
+      ...(!SUPABASE_SERVICE_ROLE_KEY ? ['SUPABASE_SERVICE_ROLE_KEY'] : []),
+    ];
+    const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Connect Supabase in Lovable Cloud.`;
+    console.error(`[Supabase] ${message}`);
+    throw new Error(message);
   }
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {

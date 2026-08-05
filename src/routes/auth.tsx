@@ -23,25 +23,14 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // In local preview (no Supabase configured), bypass auth entirely and go straight to admin
-  const isMockMode = !import.meta.env.VITE_SUPABASE_URL;
-
   useEffect(() => {
-    if (isMockMode) {
-      navigate({ to: "/admin" });
-      return;
-    }
     supabase.auth.getUser().then(({ data }) => {
       if (data.user) navigate({ to: "/admin" });
     });
-  }, [navigate, isMockMode]);
+  }, [navigate]);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (isMockMode) {
-      navigate({ to: "/admin" });
-      return;
-    }
     setLoading(true);
     setErrorMsg(null);
     try {
@@ -73,10 +62,6 @@ function AuthPage() {
       setLoading(false);
     }
   };
-
-  // While redirecting in mock mode, show nothing
-  if (isMockMode) return null;
-
 
   return (
     <main className="min-h-screen bg-primary text-primary-foreground flex flex-col">

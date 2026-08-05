@@ -1,10 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Header } from "@/components/header";
-import { supabase } from "@/integrations/supabase/client";
-import { listPublicGallery } from "@/lib/gallery.functions";
+import { localGalleryData } from "@/lib/local-gallery-data";
 import heroGallery from "@/assets/hero-gallery.jpg";
 
 export const Route = createFileRoute("/gallery")({
@@ -36,26 +33,11 @@ type GalleryRow = {
   image_path: string | null;
   sort_order: number;
 };
-
 function useGalleryImageSrc(image_path: string | null, image_url: string | null) {
-  const [signed, setSigned] = useState<string | null>(null);
-  useEffect(() => {
-    let cancelled = false;
-    if (!image_path) {
-      setSigned(null);
-      return;
-    }
-    supabase.storage
-      .from("gallery-images")
-      .createSignedUrl(image_path, 60 * 60 * 24)
-      .then(({ data }) => {
-        if (!cancelled && data?.signedUrl) setSigned(data.signedUrl);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [image_path]);
-  if (image_path && signed) return signed;
+  if (image_path) {
+    if (image_path.startsWith("http") || image_path.startsWith("/")) return image_path;
+    return `/${image_path}`;
+  }
   return image_url || "";
 }
 
@@ -90,13 +72,9 @@ function GalleryTile({ row, index }: { row: GalleryRow; index: number }) {
 }
 
 function GalleryPage() {
-  const fn = useServerFn(listPublicGallery);
-  const { data, isLoading } = useQuery({
-    queryKey: ["public-gallery"],
-    queryFn: () => fn() as unknown as Promise<GalleryRow[]>,
-  });
-
-  const rows = data ?? [];
+  // Use local gallery data instead of Supabase
+  const rows = localGalleryData;
+  const isLoading = false;
 
   return (
     <main className="min-h-screen bg-background text-primary">

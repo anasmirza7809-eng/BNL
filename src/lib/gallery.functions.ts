@@ -1,36 +1,10 @@
-import { createServerFn } from "@tanstack/start-client-core";
+import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
 
-let mockGallery: any[] = [
-  {
-    id: "e9747eee-6cc2-42b4-9749-b5173614cd54",
-    title: "Luxury Villa Exterior",
-    caption: "A view of the infinity pool and exterior design of our villa project in Dubai.",
-    image_url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&auto=format&fit=crop&q=80",
-    image_path: null,
-    sort_order: 1,
-    published: true,
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: "a57c7b3b-2ef8-48db-88c7-d8cf71b349be",
-    title: "Modern Office Reception",
-    caption: "Elegant marble reception and lobby area in Business Bay.",
-    image_url: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&auto=format&fit=crop&q=80",
-    image_path: null,
-    sort_order: 2,
-    published: true,
-    created_at: new Date().toISOString(),
-  }
-];
-
-const isMock = !process.env.SUPABASE_URL;
-
 async function assertAdmin(context: { supabase: any; userId: string }) {
-  if (isMock) return;
   const { data, error } = await context.supabase.rpc("has_role", {
     _user_id: context.userId,
     _role: "admin",
@@ -41,9 +15,6 @@ async function assertAdmin(context: { supabase: any; userId: string }) {
 
 // Public: list published gallery images (no auth)
 export const listPublicGallery = createServerFn({ method: "GET" }).handler(async () => {
-  if (isMock) {
-    return mockGallery.filter(g => g.published);
-  }
   const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
   const supabase = createClient<Database>(process.env.SUPABASE_URL!, key, {
     auth: { persistSession: false, autoRefreshToken: false },
@@ -73,7 +44,6 @@ export const listAdminGallery = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context);
-    if (isMock) return mockGallery;
     const { data, error } = await context.supabase
       .from("gallery_images")
       .select("*")
@@ -99,25 +69,13 @@ export const upsertGalleryImage = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const payload = {
-      id: data.id || crypto.randomUUID(),
       title: data.title || null,
       caption: data.caption || null,
       image_url: data.image_url || null,
       image_path: data.image_path || null,
       sort_order: data.sort_order ?? 0,
       published: data.published,
-      updated_at: new Date().toISOString(),
     };
-
-    if (isMock) {
-      if (data.id) {
-        mockGallery = mockGallery.map((g) => (g.id === data.id ? { ...g, ...payload } : g));
-      } else {
-        mockGallery.push({ ...payload, created_at: new Date().toISOString() });
-      }
-      return { id: payload.id };
-    }
-
     if (data.id) {
       const { error } = await context.supabase
         .from("gallery_images")
@@ -140,10 +98,6 @@ export const deleteGalleryImage = createServerFn({ method: "POST" })
   .validator((raw: { id: string }) => z.object({ id: z.string().uuid() }).parse(raw))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    if (isMock) {
-      mockGallery = mockGallery.filter((g) => g.id !== data.id);
-      return { ok: true };
-    }
     const { error } = await context.supabase
       .from("gallery_images")
       .delete()

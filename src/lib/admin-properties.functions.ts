@@ -1,6 +1,17 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
+import { getAdminProperties, saveAdminProperty, deleteAdminProperty } from "@/lib/admin-local-storage";
+import { getServerProperties, saveServerProperties } from "../../server/data-api";
+
+// Simple UUID generator for environments without crypto.randomUUID
+function generateUUID(): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
 
 const CATEGORY_VALUES = [
   "dubai-apartments",
@@ -42,13 +53,25 @@ export const listAdminProperties = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context);
-    const { data, error } = await context.supabase
-      .from("properties")
-      .select("*")
-      .order("category")
-      .order("created_at", { ascending: false });
-    if (error) throw new Error(error.message);
-    return data;
+    // Try to get from server file first (production)
+    try {
+      const serverProperties = await getServerProperties();
+      if (serverProperties.length > 0) {
+        return serverProperties.sort((a, b) => {
+          if (a.category !== b.category) return a.category.localeCompare(b.category);
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        });
+      }
+    } catch (error) {
+      console.error('Error reading from server file (this is normal in development):', error);
+    }
+    
+    // Fallback to local storage (development)
+    const properties = getAdminProperties();
+    return properties.sort((a, b) => {
+      if (a.category !== b.category) return a.category.localeCompare(b.category);
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
   });
 
 export const upsertProperty = createServerFn({ method: "POST" })
@@ -73,22 +96,34 @@ export const upsertProperty = createServerFn({ method: "POST" })
       published: data.published,
     };
 
-    if (data.id) {
-      const { error } = await context.supabase
-        .from("properties")
-        .update(payload)
-        .eq("id", data.id);
-      if (error) throw new Error(error.message);
-      return { id: data.id };
+    // Use local storage for development
+    const id = data.id || generateUUID();
+    const property = {
+      ...payload,
+      id,
+      created_at: data.id ? getAdminPropertyById(data.id)?.created_at || new Date().toISOString() : new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    saveAdminProperty(property as any);
+
+    // Also save to server JSON file for production
+    try {
+      const currentProperties = await getServerProperties();
+      const existingIndex = currentProperties.findIndex((p: any) => p.id === id);
+      
+      if (existingIndex >= 0) {
+        currentProperties[existingIndex] = property;
+      } else {
+        currentProperties.push(property);
+      }
+      
+      await saveServerProperties(currentProperties);
+    } catch (error) {
+      console.error('Error saving to server file (this is normal in development):', error);
     }
 
-    const { data: inserted, error } = await context.supabase
-      .from("properties")
-      .insert(payload)
-      .select("id")
-      .single();
-    if (error) throw new Error(error.message);
-    return { id: inserted.id as string };
+    return { id };
   });
 
 export const deleteProperty = createServerFn({ method: "POST" })
@@ -96,25 +131,17 @@ export const deleteProperty = createServerFn({ method: "POST" })
   .validator((raw) => z.object({ id: z.string().uuid() }).parse(raw))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    const { data: existing } = await context.supabase
-      .from("properties")
-      .select("image_path, gallery")
-      .eq("id", data.id)
-      .maybeSingle();
+    // Use local storage for development
+    deleteAdminProperty(data.id);
 
-    const { error } = await context.supabase
-      .from("properties")
-      .delete()
-      .eq("id", data.id);
-    if (error) throw new Error(error.message);
-
-    const toRemove: string[] = [];
-    if (existing?.image_path) toRemove.push(existing.image_path);
-    if (Array.isArray(existing?.gallery)) toRemove.push(...existing.gallery);
-    if (toRemove.length) {
-      await context.supabase.storage
-        .from("property-images")
-        .remove(toRemove);
+    // Also delete from server JSON file for production
+    try {
+      const currentProperties = await getServerProperties();
+      const filtered = currentProperties.filter((p: any) => p.id !== data.id);
+      await saveServerProperties(filtered);
+    } catch (error) {
+      console.error('Error deleting from server file (this is normal in development):', error);
     }
+
     return { ok: true as const };
   });

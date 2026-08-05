@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Header } from "@/components/header";
-import { localGalleryData } from "@/lib/local-gallery-data";
+import { listPublicGallery } from "@/lib/gallery.functions";
 import heroGallery from "@/assets/hero-gallery.jpg";
 
 export const Route = createFileRoute("/gallery")({
@@ -72,9 +72,16 @@ function GalleryTile({ row, index }: { row: GalleryRow; index: number }) {
 }
 
 function GalleryPage() {
-  // Use local gallery data instead of Supabase
-  const rows = localGalleryData;
-  const isLoading = false;
+  // Use combined gallery data (local + admin-added)
+  const [rows, setRows] = useState<GalleryRow[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    listPublicGallery().then(data => {
+      setRows(data);
+      setIsLoading(false);
+    });
+  }, []);
 
   return (
     <main className="min-h-screen bg-background text-primary">

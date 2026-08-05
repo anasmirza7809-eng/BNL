@@ -5,6 +5,7 @@ type GalleryRow = {
   image_url: string | null;
   image_path: string | null;
   sort_order: number;
+  published: boolean;
 };
 
 // Local gallery data using images from public/properties directory
@@ -16,6 +17,7 @@ export const localGalleryData: GalleryRow[] = [
     image_url: "/properties/04b60530-e2e3-4acc-8e7a-e7aae205a894.jpeg",
     image_path: null,
     sort_order: 1,
+    published: true,
   },
   {
     id: "2",
@@ -24,6 +26,7 @@ export const localGalleryData: GalleryRow[] = [
     image_url: "/properties/247dcba4-8eee-45cc-a554-45b4dc8cbe97.jpeg",
     image_path: null,
     sort_order: 2,
+    published: true,
   },
   {
     id: "3",
@@ -32,6 +35,7 @@ export const localGalleryData: GalleryRow[] = [
     image_url: "/properties/46b5e61c-66b1-4245-8389-f87ef2d425ce.jpeg",
     image_path: null,
     sort_order: 3,
+    published: true,
   },
   {
     id: "4",
@@ -40,6 +44,7 @@ export const localGalleryData: GalleryRow[] = [
     image_url: "/properties/4a5b54f3-bb52-492e-a980-397ba80aeb8a.jpeg",
     image_path: null,
     sort_order: 4,
+    published: true,
   },
   {
     id: "5",
@@ -48,6 +53,7 @@ export const localGalleryData: GalleryRow[] = [
     image_url: "/properties/532a7c19-3ccb-4adf-889b-7f9560654104.jpeg",
     image_path: null,
     sort_order: 5,
+    published: true,
   },
   {
     id: "6",
@@ -56,6 +62,7 @@ export const localGalleryData: GalleryRow[] = [
     image_url: "/properties/68963928-32c8-43aa-b39c-6ca9782d7976.jpeg",
     image_path: null,
     sort_order: 6,
+    published: true,
   },
   {
     id: "7",
@@ -64,6 +71,7 @@ export const localGalleryData: GalleryRow[] = [
     image_url: "/properties/75e55b68-948d-4330-878d-1d13097e1e0f.jpeg",
     image_path: null,
     sort_order: 7,
+    published: true,
   },
   {
     id: "8",
@@ -72,6 +80,7 @@ export const localGalleryData: GalleryRow[] = [
     image_url: "/properties/7a15fc0c-efc7-4d1b-84f1-228af0661205.jpeg",
     image_path: null,
     sort_order: 8,
+    published: true,
   },
   {
     id: "9",
@@ -80,6 +89,7 @@ export const localGalleryData: GalleryRow[] = [
     image_url: "/properties/9acdd4b3-1e29-4f30-ab81-1ecbb961c2d4.jpeg",
     image_path: null,
     sort_order: 9,
+    published: true,
   },
   {
     id: "10",
@@ -88,6 +98,7 @@ export const localGalleryData: GalleryRow[] = [
     image_url: "/properties/ad5589f0-e6d7-4344-839b-6a21f79e7689.jpeg",
     image_path: null,
     sort_order: 10,
+    published: true,
   },
   {
     id: "11",
@@ -96,6 +107,7 @@ export const localGalleryData: GalleryRow[] = [
     image_url: "/properties/b7b445c1-73a7-45ad-8e48-35706c517a76.jpeg",
     image_path: null,
     sort_order: 11,
+    published: true,
   },
   {
     id: "12",
@@ -104,6 +116,7 @@ export const localGalleryData: GalleryRow[] = [
     image_url: "/properties/c56df1b8-6dc1-4470-b317-d39791bfdc70.jpeg",
     image_path: null,
     sort_order: 12,
+    published: true,
   },
   {
     id: "13",
@@ -112,6 +125,7 @@ export const localGalleryData: GalleryRow[] = [
     image_url: "/properties/cc9e9fe6-b1f4-4462-9404-14475311b730.jpeg",
     image_path: null,
     sort_order: 13,
+    published: true,
   },
   {
     id: "14",
@@ -120,6 +134,7 @@ export const localGalleryData: GalleryRow[] = [
     image_url: "/properties/e4eb1f85-0298-4b6c-bacd-bd817915d010.jpeg",
     image_path: null,
     sort_order: 14,
+    published: true,
   },
   {
     id: "15",
@@ -128,6 +143,7 @@ export const localGalleryData: GalleryRow[] = [
     image_url: "/properties/e5a3a92e-4cfb-4dda-bb65-06d36af916fd.jpeg",
     image_path: null,
     sort_order: 15,
+    published: true,
   },
   {
     id: "16",
@@ -136,5 +152,6 @@ export const localGalleryData: GalleryRow[] = [
     image_url: "/properties/f95b3ed7-3456-4be8-a572-1760a15c2152.jpeg",
     image_path: null,
     sort_order: 16,
+    published: true,
   },
 ];

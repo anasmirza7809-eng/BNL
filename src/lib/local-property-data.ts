@@ -229,32 +229,3 @@ export function getLocalPropertiesByCategory(category: string): Property[] {
 export function getLocalPropertyById(id: string): Property | undefined {
   return localPropertyData.find((p) => p.id === id && p.published);
 }
-
-// Combine local data with admin-added properties from localStorage
-export function getAllProperties(): Property[] {
-  const adminProperties = getAdminProperties();
-  const combined = [...localPropertyData, ...adminProperties];
-  return combined.filter(p => p.published);
-}
-
-export function getPropertiesByCategory(category: string): Property[] {
-  const allProperties = getAllProperties();
-  return allProperties.filter(p => p.category === category);
-}
-
-export function getPropertyById(id: string): Property | undefined {
-  const allProperties = getAllProperties();
-  return allProperties.find(p => p.id === id);
-}
-
-// Helper to get admin properties from localStorage (client-side only)
-function getAdminProperties(): Property[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const stored = localStorage.getItem('bnl_admin_properties');
-    return stored ? JSON.parse(stored) : [];
-  } catch (error) {
-    console.error('Error reading admin properties from localStorage:', error);
-    return [];
-  }
-}

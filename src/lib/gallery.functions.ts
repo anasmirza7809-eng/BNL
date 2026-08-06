@@ -3,19 +3,6 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
-import { getAdminGalleryImages, saveAdminGalleryImage, deleteAdminGalleryImage, getAdminGalleryImageById } from "@/lib/admin-gallery-local-storage";
-import { localGalleryData } from "@/lib/local-gallery-data";
-import { fetchAdminGallery } from "@/lib/json-file-storage";
-import { getServerGallery, saveServerGallery } from "../../server/data-api";
-
-// Simple UUID generator for environments without crypto.randomUUID
-function generateUUID(): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0;
-    const v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-}
 
 async function assertAdmin(context: { supabase: any; userId: string }) {
   const { data, error } = await context.supabase.rpc("has_role", {
@@ -27,59 +14,43 @@ async function assertAdmin(context: { supabase: any; userId: string }) {
 }
 
 // Public: list published gallery images (no auth)
-export async function listPublicGallery() {
-  // Try to get admin images from JSON file first (for deployment)
-  let adminImages: any[] = [];
-  try {
-    adminImages = await fetchAdminGallery();
-  } catch (error) {
-    console.error('Error fetching admin gallery from JSON file, falling back to localStorage:', error);
-    // Fallback to localStorage (for development)
-    adminImages = getAdminGalleryImages();
-  }
-  
-  // Combine local gallery data with admin-added images
-  const combined = [...localGalleryData, ...adminImages];
-  return combined
-    .filter(img => img.published)
-    .map(img => ({
-      id: img.id,
-      title: img.title,
-      caption: img.caption,
-      image_url: img.image_url,
-      image_path: img.image_path,
-      sort_order: img.sort_order,
-    }))
-    .sort((a, b) => {
-      if (a.sort_order !== b.sort_order) return a.sort_order - b.sort_order;
-      return 0;
-    });
-}
+export const listPublicGallery = createServerFn({ method: "GET" }).handler(async () => {
+  const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
+  const supabase = createClient<Database>(process.env.SUPABASE_URL!, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+    global: {
+      fetch: (input, init) => {
+        const h = new Headers(init?.headers);
+        if (key.startsWith("sb_") && h.get("Authorization") === `Bearer ${key}`) {
+          h.delete("Authorization");
+        }
+        h.set("apikey", key);
+        return fetch(input, { ...init, headers: h });
+      },
+    },
+  });
+  const { data, error } = await supabase
+    .from("gallery_images")
+    .select("id, title, caption, image_url, image_path, sort_order")
+    .eq("published", true)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(error.message);
+  return data ?? [];
+});
 
 // Admin: list all
 export const listAdminGallery = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context);
-    // Try to get from server file first (production)
-    try {
-      const serverGallery = await getServerGallery();
-      if (serverGallery.length > 0) {
-        return serverGallery.sort((a, b) => {
-          if (a.sort_order !== b.sort_order) return a.sort_order - b.sort_order;
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-        });
-      }
-    } catch (error) {
-      console.error('Error reading from server file (this is normal in development):', error);
-    }
-    
-    // Fallback to local storage (development)
-    const images = getAdminGalleryImages();
-    return images.sort((a, b) => {
-      if (a.sort_order !== b.sort_order) return a.sort_order - b.sort_order;
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-    });
+    const { data, error } = await context.supabase
+      .from("gallery_images")
+      .select("*")
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return data;
   });
 
 const galleryInput = z.object({
@@ -105,33 +76,21 @@ export const upsertGalleryImage = createServerFn({ method: "POST" })
       sort_order: data.sort_order ?? 0,
       published: data.published,
     };
-    // Use local storage for development
-    const id = data.id || generateUUID();
-    const image = {
-      ...payload,
-      id,
-      created_at: data.id ? getAdminGalleryImageById(data.id)?.created_at || new Date().toISOString() : new Date().toISOString(),
-    };
-
-    saveAdminGalleryImage(image as any);
-
-    // Also save to server JSON file for production
-    try {
-      const currentGallery = await getServerGallery();
-      const existingIndex = currentGallery.findIndex((img: any) => img.id === id);
-      
-      if (existingIndex >= 0) {
-        currentGallery[existingIndex] = image;
-      } else {
-        currentGallery.push(image);
-      }
-      
-      await saveServerGallery(currentGallery);
-    } catch (error) {
-      console.error('Error saving to server file (this is normal in development):', error);
+    if (data.id) {
+      const { error } = await context.supabase
+        .from("gallery_images")
+        .update(payload)
+        .eq("id", data.id);
+      if (error) throw new Error(error.message);
+      return { id: data.id };
     }
-
-    return { id };
+    const { data: inserted, error } = await context.supabase
+      .from("gallery_images")
+      .insert(payload)
+      .select("id")
+      .single();
+    if (error) throw new Error(error.message);
+    return { id: inserted.id };
   });
 
 export const deleteGalleryImage = createServerFn({ method: "POST" })
@@ -139,17 +98,10 @@ export const deleteGalleryImage = createServerFn({ method: "POST" })
   .validator((raw: { id: string }) => z.object({ id: z.string().uuid() }).parse(raw))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    // Use local storage for development
-    deleteAdminGalleryImage(data.id);
-
-    // Also delete from server JSON file for production
-    try {
-      const currentGallery = await getServerGallery();
-      const filtered = currentGallery.filter((img: any) => img.id !== data.id);
-      await saveServerGallery(filtered);
-    } catch (error) {
-      console.error('Error deleting from server file (this is normal in development):', error);
-    }
-
+    const { error } = await context.supabase
+      .from("gallery_images")
+      .delete()
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
     return { ok: true };
   });

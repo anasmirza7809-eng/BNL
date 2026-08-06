@@ -1,10 +1,8 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePropertyImageSrc } from "@/lib/property-image";
-import { getPropertyById } from "@/lib/local-property-data";
-import { getPublicProperty } from "@/lib/public-properties.functions";
+import { getLocalPropertyById } from "@/lib/local-property-data";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import heroDubai from "@/assets/hero-dubai.jpg";
@@ -34,22 +32,6 @@ const CATEGORY_LABEL: Record<string, { label: string; region: string }> = {
   "india-land": { label: "Land Investment", region: "India" },
 };
 
-const propertyQuery = (id: string) =>
-  queryOptions({
-    queryKey: ["property", id],
-    queryFn: async (): Promise<Property> => {
-      // First check local properties
-      const localProperty = getPropertyById(id);
-      if (localProperty) return localProperty;
-      
-      // Then check admin-added properties
-      const adminProperty = await getPublicProperty(id);
-      if (adminProperty) return adminProperty;
-      
-      throw notFound();
-    },
-  });
-
 type Property = {
   id: string;
   category: string;
@@ -69,8 +51,10 @@ type Property = {
 };
 
 export const Route = createFileRoute("/property/$id")({
-  loader: async ({ params, context }) => {
-    await context.queryClient.ensureQueryData(propertyQuery(params.id));
+  loader: ({ params }) => {
+    const property = getLocalPropertyById(params.id);
+    if (!property) throw notFound();
+    return property;
   },
   head: ({ loaderData }) => {
     const p = loaderData as Property | undefined;
@@ -117,7 +101,7 @@ function useGalleryUrls(paths: string[]): string[] {
 
 
 function PropertyPage() {
-  const { data: p } = useSuspenseQuery(propertyQuery(Route.useParams().id));
+  const p = Route.useLoaderData() as Property;
   const fallback = FALLBACKS[p.category] ?? dubaiApartment;
   const cat = CATEGORY_LABEL[p.category] ?? { label: "Property", region: "" };
   const heroSrc = usePropertyImageSrc(p.image_path, p.image_url, fallback, p.gallery);
